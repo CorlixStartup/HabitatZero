@@ -264,7 +264,7 @@ src/main/java/br/com/fiap/habitatzero/
 | `POST` | `/sensores/leitura` | Recebe leitura do ESP32 (IoT) | ✅ |
 | `GET` | `/alertas` | Lista alertas ativos | ✅ |
 
-> Documentação interativa disponível em: `http://localhost:8080/swagger-ui.html`
+> Documentação interativa disponível em: `http://localhost:8080/swagger-ui/index.html`
 
 ### Lógica de Alerta — AlertaService
 
