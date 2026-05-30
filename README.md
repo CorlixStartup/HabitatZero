@@ -50,11 +50,11 @@ Este projeto é dividido em **módulos independentes**, cada um com seu próprio
 
 ```
 habitatzero/
-├── habitatzero-api/          # Backend Spring Boot (este repositório se módulo API)
-├── habitatzero-mobile/       # Aplicativo Android Studio
-├── habitatzero-iot/          # Firmware ESP32 + simulações de sensores
-├── habitatzero-db/           # Scripts SQL (DDL + DML + consultas)
-└── README.md                 # Este arquivo
+├── backend/      # Backend Spring Boot (este repositório se módulo API)
+├── mobile/       # Aplicativo Android Studio
+├── iot/          # Firmware ESP32 + simulações de sensores
+├── db/           # Scripts SQL (DDL + DML + consultas)
+└── README.md     # Este arquivo
 ```
 
 ---
@@ -200,11 +200,11 @@ WHERE p.fase_crescimento = 'COLHEITA'
 
 | Tecnologia | Versão | Uso |
 |---|---|---|
-| Java | 17 | Linguagem principal |
-| Spring Boot | 3.x | Framework web |
+| Java | 21 | Linguagem principal |
+| Spring Boot | 4.x | Framework web |
 | Spring Data JPA | 3.x | ORM / persistência |
 | Spring Security | 6.x | Autenticação e autorização |
-| MySQL Connector | 8.0 | Driver JDBC |
+| MySQL Connector | 9.6 | Driver JDBC |
 | Springdoc OpenAPI | 2.x | Documentação Swagger |
 | Lombok | latest | Redução de boilerplate |
 | Bean Validation | 3.x | Validação de inputs |
@@ -636,9 +636,9 @@ while True:
 
 ### Pré-requisitos
 
-- Java 17+
+- Java 21+
 - Maven 3.8+
-- MySQL 8.0+
+- MySQL 9.6+
 - Android Studio Hedgehog (ou superior)
 - Python 3.x (apenas para simulação de sensores)
 - Arduino IDE 2.x + board ESP32 (opcional)
