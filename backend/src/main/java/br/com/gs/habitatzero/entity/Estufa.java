@@ -1,24 +1,17 @@
 package br.com.gs.habitatzero.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "tb_estufa")
-@Getter
-@Setter
+@Table(name = "estufa")
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Estufa {
@@ -27,47 +20,51 @@ public class Estufa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Column(nullable = false)
-    private String name;
+    @Column(nullable = false, length = 100)
+    private String nome;
 
-    private String location;
+    @Column(nullable = false, length = 200)
+    private String localizacao;
 
-    @Min(10)
-    @Max(40)
-    private Double temperature;
+    @Column(name = "capacidade_m2", nullable = false)
+    private Double capacidadeM2;
 
-    @Min(0)
-    @Max(100)
-    private Double humidity;
+    @Column(nullable = false, length = 20)
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private StatusEstufa status = StatusEstufa.ATIVA;
 
-    @Min(0)
-    @Max(100)
-    private Double oxygen;
+    // Thresholds personalizáveis por estufa
+    @Column(name = "threshold_oxigenio_min")
+    @Builder.Default
+    private Double thresholdOxigenioMin = 19.5;
 
-    @Min(0)
-    @Max(1000)
-    private Double radiation;
+    @Column(name = "threshold_umidade_min")
+    @Builder.Default
+    private Double thresholdUmidadeMin = 30.0;
 
-    @Column(nullable = false)
-    private String status;
+    @Column(name = "threshold_radiacao_max")
+    @Builder.Default
+    private Double thresholdRadiacaoMax = 2.0;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "estufa", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "threshold_temperatura_max")
+    @Builder.Default
+    private Double thresholdTemperaturaMax = 40.0;
+
+    @OneToMany(mappedBy = "estufa", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Planta> plantas;
+
+    @OneToMany(mappedBy = "estufa", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SensorAmbiente> sensores;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "estufa", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "estufa", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Colono> colonos;
+
+    @OneToMany(mappedBy = "estufa", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Alerta> alertas;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "estufa", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Equipamento> equipamentos;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
+    public enum StatusEstufa {
+        ATIVA, INATIVA, MANUTENCAO
+    }
 }
+

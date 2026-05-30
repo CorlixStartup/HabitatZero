@@ -1,21 +1,17 @@
 package br.com.gs.habitatzero.entity;
 
-import br.com.gs.habitatzero.enums.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tb_colonos")
-@Getter
-@Setter
+@Table(name = "colono", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_colono_email", columnNames = "email")
+})
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Colono {
@@ -24,26 +20,24 @@ public class Colono {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Column(nullable = false)
-    private String name;
+    @Column(nullable = false, length = 100)
+    private String nome;
 
-    @Email
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, length = 150)
     private String email;
 
-    @NotBlank
-    @Column(nullable = false)
-    private String password;
+    @Column(name = "senha_hash", nullable = false)
+    private String senhaHash;
 
+    @Column(nullable = false, length = 50)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private CargoColono cargo;
 
-    private Boolean status = true;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "estufa_id")
+    private Estufa estufa;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    private LocalDateTime lastTimeLoggedIn;
-
+    public enum CargoColono {
+        AGRONOMISTA, ENGENHEIRO, MEDICO, COMANDANTE, TECNICO
+    }
 }
