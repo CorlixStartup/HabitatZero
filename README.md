@@ -123,47 +123,15 @@ habitatzero/
 
 ### Script DDL Principal
 
-```sql
-CREATE DATABASE habitatzero CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE habitatzero;
+O script completo está em [`db/script.sql`](db/script.sql). Resumo das tabelas:
 
-CREATE TABLE Estufa (
-    id           BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nome         VARCHAR(100)   NOT NULL,
-    localizacao  VARCHAR(200)   NOT NULL,
-    capacidade_m2 DECIMAL(10,2) NOT NULL,
-    status       ENUM('ATIVA','MANUTENCAO','INATIVA') DEFAULT 'ATIVA'
-);
-
-CREATE TABLE Colono (
-    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nome        VARCHAR(150)  NOT NULL,
-    email       VARCHAR(150)  NOT NULL UNIQUE,
-    senha_hash  VARCHAR(255)  NOT NULL,
-    cargo       VARCHAR(100),
-    estufa_id   BIGINT,
-    FOREIGN KEY (estufa_id) REFERENCES Estufa(id) ON DELETE SET NULL
-);
-
-CREATE TABLE Planta (
-    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nome_cientifico   VARCHAR(150) NOT NULL,
-    fase_crescimento  ENUM('GERMINACAO','CRESCIMENTO','MATURACAO','COLHEITA') NOT NULL,
-    data_plantio      DATE         NOT NULL,
-    estufa_id         BIGINT       NOT NULL,
-    FOREIGN KEY (estufa_id) REFERENCES Estufa(id) ON DELETE CASCADE
-);
-
-CREATE TABLE Sensor_Ambiente (
-    id             BIGINT AUTO_INCREMENT PRIMARY KEY,
-    tipo_sensor    ENUM('OXIGENIO','UMIDADE','RADIACAO','TEMPERATURA') NOT NULL,
-    valor_leitura  DECIMAL(10,4) NOT NULL,
-    unidade        VARCHAR(20)   NOT NULL,
-    timestamp      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    estufa_id      BIGINT        NOT NULL,
-    FOREIGN KEY (estufa_id) REFERENCES Estufa(id) ON DELETE CASCADE
-);
-```
+| Tabela | Colunas principais |
+|--------|-------------------|
+| `estufa` | `id`, `nome`, `localizacao`, `capacidade_m2`, `status` (`ATIVA`/`INATIVA`/`MANUTENCAO`), thresholds de O₂, umidade, radiação e temperatura |
+| `colono` | `id`, `nome`, `email` (único), `senha_hash`, `cargo` (`AGRONOMISTA`/`COMANDANTE`/`ENGENHEIRO`/`MEDICO`/`TECNICO`), `estufa_id` |
+| `planta` | `id`, `nome_cientifico`, `nome_comum`, `fase_crescimento` (`SEMENTE`/`GERMINACAO`/`CRESCIMENTO`/`MATURACAO`/`COLHEITA`), `data_plantio`, `estufa_id` |
+| `sensor_ambiente` | `id`, `tipo_sensor` (`OXIGENIO`/`UMIDADE_SOLO`/`RADIACAO_EXTERNA`/`TEMPERATURA`), `valor_leitura`, `unidade` (`PERCENTUAL`/`MSV_HORA`/`CELSIUS`), `timestamp`, `estufa_id` |
+| `alerta` | `id`, `severidade` (`ATENCAO`/`CRITICO`/`EMERGENCIA`), `mensagem`, `tipo_sensor`, `valor_registrado`, `criado_em`, `resolvido`, `resolvido_em`, `estufa_id` |
 
 ### Consultas de Simulação Espacial
 
@@ -180,7 +148,7 @@ ORDER BY s.timestamp DESC;
 -- Histórico de umidade por estufa (média diária)
 SELECT estufa_id, DATE(timestamp) AS dia, AVG(valor_leitura) AS media_umidade
 FROM Sensor_Ambiente
-WHERE tipo_sensor = 'UMIDADE'
+WHERE tipo_sensor = 'UMIDADE_SOLO'
 GROUP BY estufa_id, DATE(timestamp)
 ORDER BY dia DESC;
 
@@ -212,40 +180,54 @@ WHERE p.fase_crescimento = 'COLHEITA'
 ### Estrutura de Pacotes
 
 ```
-src/main/java/br/com/fiap/habitatzero/
+src/main/java/br/com/gs/habitatzero/
 ├── config/
 │   ├── SecurityConfig.java        # Configuração do Spring Security
-│   └── SwaggerConfig.java         # Configuração do Springdoc OpenAPI
+│   └── OpenApiConfig.java         # Configuração do Springdoc OpenAPI
 ├── controller/
 │   ├── AuthController.java        # POST /auth/login
+│   ├── ColonoController.java      # CRUD de colonos
 │   ├── EstufaController.java      # CRUD de estufas
 │   ├── PlantaController.java      # CRUD de plantas
 │   ├── SensorController.java      # Recebimento de leituras IoT
-│   └── AlertaController.java      # Consulta de alertas ativos
+│   └── AlertaController.java      # Consulta e resolução de alertas
 ├── dto/
-│   ├── LoginRequestDTO.java
-│   ├── EstufaRequestDTO.java
-│   ├── SensorLeituraDTO.java
-│   └── AlertaResponseDTO.java
-├── model/
+│   ├── request/
+│   │   ├── LoginRequest.java
+│   │   ├── ColonoRequest.java
+│   │   ├── EstufaRequest.java
+│   │   ├── PlantaRequest.java
+│   │   └── SensorLeituraRequest.java
+│   └── response/
+│       ├── TokenResponse.java
+│       ├── ColonoResponse.java
+│       ├── EstufaResponse.java
+│       ├── PlantaResponse.java
+│       ├── SensorLeituraResponse.java
+│       └── AlertaResponse.java
+├── entity/
 │   ├── Estufa.java
 │   ├── Planta.java
 │   ├── SensorAmbiente.java
-│   └── Colono.java
+│   ├── Colono.java
+│   └── Alerta.java
 ├── repository/
+│   ├── ColonoRepository.java
 │   ├── EstufaRepository.java
 │   ├── PlantaRepository.java
 │   ├── SensorAmbienteRepository.java
-│   └── ColonoRepository.java
+│   └── AlertaRepository.java
 ├── service/
+│   ├── AuthService.java
+│   ├── ColonoService.java
 │   ├── EstufaService.java
 │   ├── PlantaService.java
 │   ├── SensorService.java
-│   ├── AlertaService.java         # Lógica de disparo de alertas
-│   └── AuthService.java
-└── security/
+│   └── AlertaService.java         # Lógica de disparo de alertas
+└── secutiry/
     ├── JwtUtil.java
-    └── JwtAuthFilter.java
+    ├── JwtAuthFilter.java
+    └── ColonoUserDetailsService.java
 ```
 
 ### Endpoints da API
@@ -253,75 +235,57 @@ src/main/java/br/com/fiap/habitatzero/
 | Método | Endpoint | Descrição | Auth |
 |---|---|---|---|
 | `POST` | `/auth/login` | Autentica colono, retorna JWT | ❌ |
+| `GET` | `/colonos` | Lista todos os colonos | ✅ |
+| `GET` | `/colonos/{id}` | Busca colono por ID | ✅ |
+| `POST` | `/colonos` | Cadastra novo colono | ✅ |
+| `DELETE` | `/colonos/{id}` | Remove colono | ✅ |
 | `GET` | `/estufas` | Lista todas as estufas | ✅ |
 | `GET` | `/estufas/{id}` | Busca estufa por ID | ✅ |
 | `POST` | `/estufas` | Cadastra nova estufa | ✅ |
 | `PUT` | `/estufas/{id}` | Atualiza configurações da estufa | ✅ |
 | `DELETE` | `/estufas/{id}` | Remove estufa | ✅ |
 | `GET` | `/plantas` | Lista plantas em cultivo | ✅ |
+| `GET` | `/plantas/{id}` | Busca planta por ID | ✅ |
 | `POST` | `/plantas` | Adiciona planta a uma estufa | ✅ |
+| `PUT` | `/plantas/{id}` | Atualiza dados da planta | ✅ |
+| `DELETE` | `/plantas/{id}` | Remove planta | ✅ |
+| `POST` | `/sensores/leitura` | Recebe leitura do ESP32 (IoT) | ❌ |
 | `GET` | `/sensores/leituras` | Consulta últimas leituras | ✅ |
-| `POST` | `/sensores/leitura` | Recebe leitura do ESP32 (IoT) | ✅ |
 | `GET` | `/alertas` | Lista alertas ativos | ✅ |
+| `GET` | `/alertas/estufa/{id}` | Lista alertas por estufa | ✅ |
+| `PATCH` | `/alertas/{id}/resolver` | Marca alerta como resolvido | ✅ |
 
 > Documentação interativa disponível em: `http://localhost:8080/swagger-ui/index.html`
 
 ### Lógica de Alerta — AlertaService
 
-```java
-@Service
-public class AlertaService {
+O `AlertaService` avalia cada leitura recebida contra os thresholds configurados por estufa e persiste um `Alerta` quando necessário:
 
-    private static final double THRESHOLD_O2   = 19.5;  // % mínimo de oxigênio
-    private static final double THRESHOLD_UMID = 30.0;  // % mínimo de umidade
-    private static final double THRESHOLD_RAD  = 2.0;   // mSv/h máximo de radiação
+| Sensor | Condição | Severidade |
+|--------|----------|-----------|
+| `OXIGENIO` | valor < `thresholdOxigenioMin` (padrão 19,5%) | `ATENCAO` / `CRITICO` / `EMERGENCIA` (por desvio) |
+| `UMIDADE_SOLO` | valor < `thresholdUmidadeMin` (padrão 30%) | `ATENCAO` |
+| `RADIACAO_EXTERNA` | valor > `thresholdRadiacaoMax` (padrão 2,0 mSv/h) | `ATENCAO` / `CRITICO` / `EMERGENCIA` (por múltiplo) |
+| `TEMPERATURA` | valor > `thresholdTemperaturaMax` (padrão 40°C) | `CRITICO` |
 
-    @Autowired private AlertaRepository alertaRepository;
-
-    public void avaliarLeitura(SensorAmbiente leitura) {
-        switch (leitura.getTipoSensor()) {
-            case OXIGENIO -> {
-                if (leitura.getValorLeitura() < THRESHOLD_O2)
-                    dispararAlerta(leitura, Severidade.CRITICO, "O₂ abaixo do limite seguro");
-            }
-            case UMIDADE -> {
-                if (leitura.getValorLeitura() < THRESHOLD_UMID)
-                    dispararAlerta(leitura, Severidade.ALTO, "Umidade do solo crítica — risco de perda de colheita");
-            }
-            case RADIACAO -> {
-                if (leitura.getValorLeitura() > THRESHOLD_RAD)
-                    dispararAlerta(leitura, Severidade.ALTO, "Radiação externa elevada");
-            }
-        }
-    }
-
-    private void dispararAlerta(SensorAmbiente leitura, Severidade severidade, String mensagem) {
-        Alerta alerta = new Alerta();
-        alerta.setEstufa(leitura.getEstufa());
-        alerta.setSeveridade(severidade);
-        alerta.setMensagem(mensagem);
-        alerta.setTimestamp(LocalDateTime.now());
-        alertaRepository.save(alerta);
-    }
-}
-```
+Os thresholds são personalizáveis por estufa via `PUT /estufas/{id}`. O código completo está em `backend/src/main/java/br/com/gs/habitatzero/service/AlertaService.java`.
 
 ### application.properties
 
 ```properties
 # Banco de dados
-spring.datasource.url=jdbc:mysql://localhost:3306/habitatzero?useSSL=false&serverTimezone=UTC
+spring.datasource.url=jdbc:mysql://localhost:3307/habitat_zero?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
 spring.datasource.username=root
-spring.datasource.password=sua_senha_aqui
+spring.datasource.password=root
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 # JPA / Hibernate
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+spring.jpa.properties.hibernate.format_sql=true
 
 # JWT
-jwt.secret=habitatzero-secret-key-2026
+jwt.secret=HabitatZeroSecretKey2026FIAPGlobalSolution!SuperSegura
 jwt.expiration=28800000
 
 # Swagger
@@ -379,22 +343,24 @@ boolean valido = passwordEncoder.matches(senhaRaw, colono.getSenhaHash());
 ### Exemplo de Validação no DTO
 
 ```java
-public class SensorLeituraDTO {
+@Data
+public class SensorLeituraRequest {
 
-    @NotNull(message = "O ID da estufa é obrigatório")
+    @NotNull(message = "ID da estufa é obrigatório")
     private Long estufaId;
 
-    @NotNull(message = "O tipo de sensor é obrigatório")
-    private TipoSensor tipoSensor;
+    @NotNull(message = "Tipo do sensor é obrigatório")
+    private SensorAmbiente.TipoSensor tipoSensor;  // OXIGENIO | UMIDADE_SOLO | RADIACAO_EXTERNA | TEMPERATURA
 
-    @NotNull(message = "O valor da leitura é obrigatório")
-    @DecimalMin(value = "0.0", message = "Valor não pode ser negativo")
-    @DecimalMax(value = "1000.0", message = "Valor acima do limite físico permitido")
+    @NotNull(message = "Valor da leitura é obrigatório")
+    @Min(value = 0, message = "Valor de leitura não pode ser negativo")
+    @Max(value = 100000, message = "Valor de leitura fora do range físico aceitável")
     private Double valorLeitura;
 
-    @NotBlank(message = "A unidade de medida é obrigatória")
-    @Pattern(regexp = "^[a-zA-Z/%°]+$", message = "Unidade contém caracteres inválidos")
-    private String unidade;
+    @NotNull(message = "Unidade de medida é obrigatória")
+    private SensorAmbiente.UnidadeMedida unidade;  // PERCENTUAL | MSV_HORA | CELSIUS
+
+    private LocalDateTime timestamp;  // opcional — usa horário do servidor se omitido
 }
 ```
 
@@ -404,73 +370,38 @@ public class SensorLeituraDTO {
 
 ### Casos de Teste
 
-| ID | Cenário | Entrada | Saída Esperada | Status |
-|---|---|---|---|---|
-| CT-01 | Login com credenciais válidas | `email: colono@base.mars` / `senha: Senha@123` | HTTP 200 + token JWT | ✅ PASS |
-| CT-02 | Alerta de O₂ abaixo do threshold | `valor: 18.0` (threshold: 19.5%) | Alerta `CRITICO` salvo no banco | ✅ PASS |
-| CT-03 | Cadastro de estufa com dados válidos | `{ nome: "Estufa Alpha", capacidade: 50 }` | HTTP 201 + ID gerado | ✅ PASS |
-| CT-04 | Sensor com valor fora do range físico | `valor: -999` | HTTP 400 + mensagem de validação | ✅ PASS |
-| CT-05 | Tentativa de XSS em nome da estufa | `nome: "<script>alert(1)</script>"` | HTTP 400 + input rejeitado | ✅ PASS |
+A documentação completa está em [`backend/src/test/TEST_CASES.md`](backend/src/test/TEST_CASES.md).
 
-### Exemplo de Teste — AlertaService
+**Testes unitários (JUnit 5 + Mockito) — sem banco de dados:**
 
-```java
-@ExtendWith(MockitoExtension.class)
-class AlertaServiceTest {
+| ID | Cenário | Status |
+|---|---|---|
+| TC-01 | Criação de colono com dados válidos | ✅ PASS |
+| TC-02 | Criação de colono com e-mail duplicado → `BusinessException` | ✅ PASS |
+| TC-03 | Criação de estufa com thresholds padrão | ✅ PASS |
+| TC-04 | Busca de estufa por ID inexistente → `ResourceNotFoundException` | ✅ PASS |
+| TC-05 | Leitura de sensor dentro dos limites — sem alerta | ✅ PASS |
+| TC-06 | O₂ abaixo do threshold → alerta criado | ✅ PASS |
+| TC-07 | Resolução de alerta ativo → `resolvido=true` | ✅ PASS |
+| TC-08 | Login com senha incorreta → `BadCredentialsException` | ✅ PASS |
 
-    @Mock
-    private AlertaRepository alertaRepository;
+**Testes de integração IoT (pytest) — requerem backend em execução:**
 
-    @InjectMocks
-    private AlertaService alertaService;
-
-    @Test
-    @DisplayName("Deve disparar alerta CRITICO quando O₂ cair abaixo de 19.5%")
-    void deveCriarAlertaCriticoParaO2Baixo() {
-        // Arrange
-        SensorAmbiente leitura = new SensorAmbiente();
-        leitura.setTipoSensor(TipoSensor.OXIGENIO);
-        leitura.setValorLeitura(18.0);
-        leitura.setEstufa(new Estufa(1L, "Estufa Alpha"));
-
-        // Act
-        alertaService.avaliarLeitura(leitura);
-
-        // Assert
-        ArgumentCaptor<Alerta> captor = ArgumentCaptor.forClass(Alerta.class);
-        verify(alertaRepository, times(1)).save(captor.capture());
-        assertEquals(Severidade.CRITICO, captor.getValue().getSeveridade());
-    }
-
-    @Test
-    @DisplayName("Não deve criar alerta quando O₂ estiver dentro do range normal")
-    void naoDeveCriarAlertaParaO2Normal() {
-        // Arrange
-        SensorAmbiente leitura = new SensorAmbiente();
-        leitura.setTipoSensor(TipoSensor.OXIGENIO);
-        leitura.setValorLeitura(21.0); // valor normal
-
-        // Act
-        alertaService.avaliarLeitura(leitura);
-
-        // Assert
-        verify(alertaRepository, never()).save(any());
-    }
-}
-```
+| ID | Cenário | Status |
+|---|---|---|
+| IT-01 | Payload do simulador tem campos e enums corretos | ✅ PASS |
+| IT-02 | `POST /sensores/leitura` com payload válido → HTTP 200/201 | ✅ PASS |
+| IT-03 | `POST /sensores/leitura` sem `estufaId` → HTTP 400 | ✅ PASS |
+| IT-04 | Leitura persistida — resposta contém `id` e `estufaId` | ✅ PASS |
 
 ### Executar os Testes
 
 ```bash
-# Executar todos os testes
-./mvnw test
+# Testes unitários (sem banco)
+cd backend && mvn test
 
-# Executar apenas os testes de alerta
-./mvnw test -Dtest=AlertaServiceTest
-
-# Gerar relatório de cobertura (JaCoCo)
-./mvnw verify
-# Relatório disponível em: target/site/jacoco/index.html
+# Testes de integração IoT (requer backend + MySQL em execução)
+cd IoT && pip install pytest requests && pytest test_integration.py -v
 ```
 
 ---
@@ -535,20 +466,30 @@ LoginActivity
 | Sensor | Variável Medida | Unidade | Range Normal | Threshold de Alerta |
 |---|---|---|---|---|
 | Sensor de O₂ | Percentual de oxigênio interno | % | 19,5 – 23,0 | < 19,5% → **CRÍTICO** |
-| Sensor de Umidade | Umidade volumétrica do solo | % | 40 – 70 | < 30% → **ALTO** |
-| Sensor de Radiação | Dose de radiação ionizante externa | mSv/h | 0 – 1,5 | > 2,0 → **ALTO** |
+| Sensor de Umidade | Umidade volumétrica do solo | % | 40 – 70 | < 30% → **ATENÇÃO** |
+| Sensor de Radiação | Dose de radiação ionizante externa | mSv/h | 0 – 1,5 | > 2,0 mSv/h → **ATENÇÃO** |
+| Sensor de Temperatura | Temperatura interna da estufa | °C | 15 – 40 | > 40°C → **CRÍTICO** |
 
 ### Payload JSON Publicado pelo ESP32
 
 ```json
 {
-  "estufa_id": 1,
-  "tipo_sensor": "OXIGENIO",
-  "valor_leitura": 18.2,
+  "estufaId": 1,
+  "tipoSensor": "OXIGENIO",
+  "valorLeitura": 18.2,
   "unidade": "PERCENTUAL",
-  "timestamp": "2026-06-01T14:30:00Z"
+  "timestamp": "2026-06-01T14:30:00"
 }
 ```
+
+Os quatro tipos de sensor suportados e suas unidades:
+
+| `tipoSensor` | `unidade` |
+|---|---|
+| `OXIGENIO` | `PERCENTUAL` |
+| `UMIDADE_SOLO` | `PERCENTUAL` |
+| `RADIACAO_EXTERNA` | `MSV_HORA` |
+| `TEMPERATURA` | `CELSIUS` |
 
 ---
 
@@ -589,13 +530,10 @@ cd habitatzero-api
 ### 3. Simulação IoT (sem hardware)
 
 ```bash
-# Obter token de autenticação primeiro:
-curl -X POST http://localhost:8080/auth/login \
-     -H "Content-Type: application/json" \
-     -d '{"email":"admin@habitatzero.com","senha":"Admin@123"}'
-
-# Substituir o token no script e executar:
-python3 habitatzero-iot/simulate_sensors.py
+# O endpoint POST /sensores/leitura é público — não requer autenticação
+cd IoT
+pip install requests
+python3 esp32_simulator.py
 ```
 
 ### 4. Aplicativo Android
@@ -647,7 +585,7 @@ habitatzero-entrega.zip
 - [x] App Android com 3 telas (Login, Painel, Ajustes de Clima)
 - [x] Login com senha BCrypt
 - [x] 2+ práticas de segurança (BCrypt + Bean Validation + proteção SQLi/XSS)
-- [x] Simulação IoT com 3 sensores (O₂, Umidade, Radiação)
+- [x] Simulação IoT com 4 sensores (O₂, Umidade, Radiação, Temperatura)
 - [x] `README.md` com instruções de execução
 - [x] `documento.pdf` com artefatos não-código
 - [x] `.zip` com todo o código-fonte

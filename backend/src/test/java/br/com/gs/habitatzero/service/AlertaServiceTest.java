@@ -4,7 +4,6 @@ import br.com.gs.habitatzero.dto.response.AlertaResponse;
 import br.com.gs.habitatzero.entity.Alerta;
 import br.com.gs.habitatzero.entity.Estufa;
 import br.com.gs.habitatzero.entity.SensorAmbiente;
-import br.com.gs.habitatzero.exception.ResourceNotFoundException;
 import br.com.gs.habitatzero.repository.AlertaRepository;
 import br.com.gs.habitatzero.repository.EstufaRepository;
 import org.junit.jupiter.api.Test;
