@@ -9,27 +9,27 @@ INTERVALO_ENVIO = 5  # Segundos
 
 def gerar_leitura_mutante():
     """Simula o comportamento dos sensores com variações normais e críticas"""
-    sensor = random.choice(["OXIGENIO", "UMIDADE", "RADIACAO"])
-    
+    sensor = random.choice(["OXIGENIO", "UMIDADE_SOLO", "RADIACAO_EXTERNA"])
+
     if sensor == "OXIGENIO":
         # Sorteia valores que podem simular uma queda crítica (abaixo de 19.5%)
         valor = round(random.uniform(18.0, 23.0), 1)
         unidade = "PERCENTUAL"
-    elif sensor == "UMIDADE":
+    elif sensor == "UMIDADE_SOLO":
         # Sorteia valores que podem simular solo seco (abaixo de 30%)
         valor = round(random.uniform(25.0, 70.0), 1)
         unidade = "PERCENTUAL"
-    else:  # RADIACAO
+    else:  # RADIACAO_EXTERNA
         # Sorteia valores que podem simular um pico de radiação cósmica (acima de 2.0)
         valor = round(random.uniform(0.1, 3.5), 2)
-        unidade = "MSVH"
+        unidade = "MSV_HORA"
 
     payload = {
-        "estufa_id": ESTUFA_ID,
-        "tipo_sensor": sensor,
-        "valor_leitura": valor,
+        "estufaId": ESTUFA_ID,
+        "tipoSensor": sensor,
+        "valorLeitura": valor,
         "unidade": unidade,
-        "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+        "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
     }
     return payload
 
