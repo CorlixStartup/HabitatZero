@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Slider Temperatura -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_temperatura"
+            android:textSize="16sp"
+            android:paddingBottom="8dp"/>
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/sliderTemperatura"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Valor atual da temperatura -->
+        <TextView
+            android:id="@+id/txtTempAtual"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_temperatura_slider"
+            android:paddingTop="4dp"
+            android:textSize="14sp"/>
+
+        <!-- Slider Umidade -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_umidade"
+            android:textSize="16sp"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"/>
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/sliderUmidade"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Valor atual da umidade -->
+        <TextView
+            android:id="@+id/txtUmidadeAtual"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_umidade_slider"
+            android:paddingTop="4dp"
+            android:textSize="14sp"/>
+
+        <!-- Switches -->
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchVentilacao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_ventilacao"
+            android:layout_marginTop="16dp"/>
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchIrrigacao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_irrigacao"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Botões lado a lado com Material Design -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:weightSum="2">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSalvar"
+                style="@style/Widget.MaterialComponents.Button.Filled"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/btn_salvar_config"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnHistorico"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/btn_ver_historico"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

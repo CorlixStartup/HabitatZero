@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.HabitatZero" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Paleta principal futurista -->
+        <item name="colorPrimary">@color/azul_neon</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorSecondary">@color/verde_tecnologico</item>
+        <item name="colorOnSecondary">@android:color/white</item>
+
+        <!-- Cores de fundo e superfície (Tema Escuro) -->
+        <item name="android:windowBackground">@color/black</item>
+        <item name="colorSurface">#121212</item>
+        <item name="colorOnSurface">@android:color/white</item>
+        <item name="colorOnBackground">@android:color/white</item>
+
+        <!-- Status Bar -->
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!-- Novo Tema Splash customizado (conforme guia, corrigido) -->
+    <style name="Theme.HabitatZero.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/black</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="postSplashScreenTheme">@style/Theme.HabitatZero</item>
+    </style>
+</resources>

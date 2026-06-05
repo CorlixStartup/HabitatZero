@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_dashboard"
+        android:title="Dashboard"
+        android:icon="@drawable/ic_dashboard"/>
+    <item
+        android:id="@+id/nav_alertas"
+        android:title="Alertas"
+        android:icon="@drawable/ic_alert"/>
+    <item
+        android:id="@+id/nav_controle"
+        android:title="Controle"
+        android:icon="@drawable/ic_settings"/>
+    <item
+        android:id="@+id/nav_estufas"
+        android:icon="@drawable/ic_estufas"
+        android:title="Estufas" />
+</menu>
+
+

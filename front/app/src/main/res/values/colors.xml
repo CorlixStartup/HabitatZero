@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Paleta principal futurista -->
+    <color name="colorPrimary">#0D47A1</color> <!-- Azul neon -->
+    <color name="colorPrimaryDark">#002171</color>
+    <color name="colorAccent">#00E676</color> <!-- Verde tecnológico -->
+
+    <!-- Paleta alternativa -->
+    <color name="teal_700">#018786</color>
+    <color name="teal_200">#03DAC5</color>
+    <color name="purple_200">#BB86FC</color>
+    <color name="purple_700">#3700B3</color>
+
+    <!-- Cores para alertas -->
+    <color name="verde_normal">#4CAF50</color>       <!-- Verde: dentro do limite -->
+    <color name="amarelo_atencao">#FFC107</color>    <!-- Amarelo: atenção -->
+    <color name="vermelho_critico">#F44336</color>   <!-- Vermelho: crítico -->
+
+    <!-- Extras para tema futurista -->
+    <color name="azul_neon">#2962FF</color>
+    <color name="verde_tecnologico">#00E676</color>
+    <color name="vermelho_alerta">#FF1744</color>
+
+    <!-- Cor preta usada em ícones/adapters -->
+    <color name="black">#000000</color>
+</resources>

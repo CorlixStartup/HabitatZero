@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1005574197935",
+    "project_id": "habitatzero-4a28d",
+    "storage_bucket": "habitatzero-4a28d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1005574197935:android:02f74e7d6f578128d2fa5a",
+        "android_client_info": {
+          "package_name": "com.workwell.habitatzero"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBp9UyJ2y2Wj2nr4vJXTeRpq8rtFpkMkrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,63 @@
+<resources>
+    <!-- Nome do app -->
+    <string name="app_name">HabitatZero</string>
+
+    <!-- Labels com placeholders -->
+    <string name="label_temperatura">Temperatura: %1$.1f °C</string>
+    <string name="label_umidade">Umidade: %1$.1f %%</string>
+    <string name="label_oxigenio">Oxigênio: %1$.1f %%</string>
+    <string name="label_radiacao">Radiação: %1$.2f</string>
+
+    <!-- Títulos dos cards -->
+    <string name="titulo_temperatura">Temperatura</string>
+    <string name="titulo_umidade">Umidade</string>
+    <string name="titulo_oxigenio">Oxigênio</string>
+    <string name="titulo_radiacao">Radiação</string>
+
+    <!-- Labels adicionais para Controle Climático -->
+    <string name="label_ventilacao">Ventilação</string>
+    <string name="label_irrigacao">Irrigação</string>
+
+    <!-- Botões -->
+    <string name="btn_salvar_config">Salvar Configurações</string>
+    <string name="btn_ver_historico">Ver Histórico</string>
+
+    <!-- Mensagens de alerta -->
+    <string name="alerta_abaixo">Alerta de %1$s: abaixo do limite (%2$.1f)</string>
+    <string name="alerta_acima">Alerta de %1$s: acima do limite (%2$.1f)</string>
+
+    <!-- Mensagens de erro e feedback -->
+    <string name="resposta_vazia">Resposta vazia do servidor</string>
+    <string name="erro_carregar">Erro ao carregar sensores: %1$d</string>
+    <string name="falha_conexao">Falha de conexão: %1$s</string>
+
+    <!-- 🔹 Login -->
+    <string name="login_title">HabitatZero</string>
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Senha</string>
+    <string name="login_button_text">Entrar</string>
+
+    <!-- 🔹 Acessibilidade -->
+    <string name="logo_desc">Logo do aplicativo HabitatZero</string>
+
+    <!-- 🔹 Mensagens de login -->
+    <string name="login_success">Login realizado com sucesso!</string>
+    <string name="login_error">Erro ao realizar login</string>
+
+    <!-- 🔹 Sessão expirada -->
+    <string name="sessao_expirada">Sessão expirada, faça login novamente</string>
+
+    <!-- Navegação principal -->
+    <string name="main_navigation_title">HabitatZero Navigation</string>
+
+    <!-- Controle Climático — slider labels (format strings) -->
+    <string name="label_temperatura_slider">Temperatura: %1$d°C</string>
+    <string name="label_umidade_slider">Umidade: %1$d%%</string>
+
+    <!-- Estufa card labels -->
+    <string name="label_plantas">Plantas: %1$d</string>
+    <string name="label_alertas_ativos">Alertas ativos: %1$d</string>
+
+    <!-- Controle Climático — estufa selecionada -->
+    <string name="label_estufa_selecionada">Estufa: %1$s</string>
+</resources>
