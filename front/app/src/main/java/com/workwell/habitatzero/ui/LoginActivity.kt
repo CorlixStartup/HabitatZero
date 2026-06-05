@@ -20,6 +20,16 @@ class LoginActivity : AppCompatActivity() {
         val splashScreen = installSplashScreen()
 
         super.onCreate(savedInstanceState)
+
+        // Skip login if a token is already saved
+        val prefs = getSharedPreferences("HabitatZeroPrefs", Context.MODE_PRIVATE)
+        if (!prefs.getString("token", null).isNullOrEmpty()) {
+            startActivity(Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            })
+            return
+        }
+
         setContentView(R.layout.activity_login)
 
         val etEmail = findViewById<TextInputEditText>(R.id.etEmail)
