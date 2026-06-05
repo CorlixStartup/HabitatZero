@@ -15,6 +15,9 @@ class AlertasViewModel : ViewModel() {
     private val _alertasLiveData = MutableLiveData<List<Alerta>>()
     val alertasLiveData: LiveData<List<Alerta>> = _alertasLiveData
 
+    private val _alertaResolvidoId = MutableLiveData<Long>()
+    val alertaResolvidoId: LiveData<Long> = _alertaResolvidoId
+
     private val _errorLiveData = MutableLiveData<String>()
     val errorLiveData: LiveData<String> = _errorLiveData
 
@@ -26,6 +29,21 @@ class AlertasViewModel : ViewModel() {
                     _alertasLiveData.postValue(response.body())
                 } else {
                     _errorLiveData.postValue("Erro ao carregar alertas: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                _errorLiveData.postValue("Falha: ${e.message}")
+            }
+        }
+    }
+
+    fun resolverAlerta(alertaId: Long) {
+        viewModelScope.launch {
+            try {
+                val response = repository.resolverAlerta(alertaId)
+                if (response.isSuccessful) {
+                    _alertaResolvidoId.postValue(alertaId)
+                } else {
+                    _errorLiveData.postValue("Erro ao resolver alerta: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _errorLiveData.postValue("Falha: ${e.message}")

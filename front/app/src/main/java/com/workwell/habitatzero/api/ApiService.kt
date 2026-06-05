@@ -32,4 +32,16 @@ interface ApiService {
 
     @PATCH("alertas/{id}/resolver")
     suspend fun resolverAlerta(@Path("id") id: Long): Response<Alerta>
+
+    @GET("plantas")
+    suspend fun listarPlantas(@Query("estufaId") estufaId: Long? = null): Response<List<Planta>>
+
+    @POST("plantas")
+    suspend fun criarPlanta(@Body planta: PlantaRequest): Response<Planta>
+
+    @PUT("plantas/{id}")
+    suspend fun atualizarPlanta(
+        @Path("id") id: Long,
+        @Body planta: PlantaRequest
+    ): Response<Planta>
 }

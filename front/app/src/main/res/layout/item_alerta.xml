@@ -51,7 +51,18 @@
             android:text="Mensagem do alerta"
             android:textColor="@color/text_primary"
             android:textSize="14sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnResolver"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="✓ Resolver"
+            android:textSize="12sp"
+            app:strokeColor="@color/verde_normal"
+            android:textColor="@color/verde_normal"/>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
 

@@ -14,6 +14,7 @@ class AlertasActivity : AppCompatActivity() {
 
     private val viewModel: AlertasViewModel by viewModels()
     private lateinit var recyclerAlertas: RecyclerView
+    private var adapter: AlertaAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +24,14 @@ class AlertasActivity : AppCompatActivity() {
         recyclerAlertas.layoutManager = LinearLayoutManager(this)
 
         viewModel.alertasLiveData.observe(this) { alertas ->
-            recyclerAlertas.adapter = AlertaAdapter(alertas)
+            val ativos = alertas.filter { !it.resolvido }
+            adapter = AlertaAdapter(ativos.toMutableList()) { id -> viewModel.resolverAlerta(id) }
+            recyclerAlertas.adapter = adapter
+        }
+
+        viewModel.alertaResolvidoId.observe(this) { id ->
+            adapter?.removeById(id)
+            Toast.makeText(this, "Alerta resolvido ✓", Toast.LENGTH_SHORT).show()
         }
 
         viewModel.errorLiveData.observe(this) { erro ->

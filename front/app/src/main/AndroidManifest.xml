@@ -46,6 +46,15 @@
             android:name=".ui.MainActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.EstufasActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.EstufaDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.EstufasActivity"/>
+
         <!-- FCM Metadata -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

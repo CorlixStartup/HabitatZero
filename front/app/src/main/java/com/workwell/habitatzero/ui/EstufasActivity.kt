@@ -26,7 +26,7 @@ class EstufasActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         adapter = EstufaAdapter(emptyList())
-        adapter.onItemClick = { estufa -> abrirControleClimatico(estufa) }
+        adapter.onItemClick = { estufa -> abrirDetalheEstufa(estufa) }
         recyclerView.adapter = adapter
 
         estufasViewModel.estufasLiveData.observe(this) { lista ->
@@ -40,17 +40,17 @@ class EstufasActivity : AppCompatActivity() {
         estufasViewModel.carregarEstufas()
     }
 
-    private fun abrirControleClimatico(estufa: Estufa) {
-        val intent = Intent(this, ControleClimaticoActivity::class.java).apply {
-            putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_ID, estufa.id)
-            putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_NOME, estufa.nome)
-            putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_LOCALIZACAO, estufa.localizacao)
-            putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_CAPACIDADE, estufa.capacidadeM2)
-            putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_STATUS, estufa.status)
-            putExtra(ControleClimaticoActivity.EXTRA_THRESHOLD_O2, estufa.thresholdOxigenioMin)
-            putExtra(ControleClimaticoActivity.EXTRA_THRESHOLD_UMIDADE, estufa.thresholdUmidadeMin)
-            putExtra(ControleClimaticoActivity.EXTRA_THRESHOLD_RADIACAO, estufa.thresholdRadiacaoMax)
-            putExtra(ControleClimaticoActivity.EXTRA_THRESHOLD_TEMPERATURA, estufa.thresholdTemperaturaMax)
+    private fun abrirDetalheEstufa(estufa: Estufa) {
+        val intent = Intent(this, EstufaDetailActivity::class.java).apply {
+            putExtra(EstufaDetailActivity.EXTRA_ESTUFA_ID,             estufa.id)
+            putExtra(EstufaDetailActivity.EXTRA_ESTUFA_NOME,           estufa.nome)
+            putExtra(EstufaDetailActivity.EXTRA_ESTUFA_LOCALIZACAO,    estufa.localizacao)
+            putExtra(EstufaDetailActivity.EXTRA_ESTUFA_CAPACIDADE,     estufa.capacidadeM2)
+            putExtra(EstufaDetailActivity.EXTRA_ESTUFA_STATUS,         estufa.status)
+            putExtra(EstufaDetailActivity.EXTRA_THRESHOLD_O2,          estufa.thresholdOxigenioMin)
+            putExtra(EstufaDetailActivity.EXTRA_THRESHOLD_UMIDADE,     estufa.thresholdUmidadeMin)
+            putExtra(EstufaDetailActivity.EXTRA_THRESHOLD_RADIACAO,    estufa.thresholdRadiacaoMax)
+            putExtra(EstufaDetailActivity.EXTRA_THRESHOLD_TEMPERATURA, estufa.thresholdTemperaturaMax)
         }
         startActivity(intent)
     }
