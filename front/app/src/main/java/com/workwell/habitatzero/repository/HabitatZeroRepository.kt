@@ -8,6 +8,7 @@ import com.workwell.habitatzero.model.EstufaRequest
 import com.workwell.habitatzero.model.LoginDTO
 import com.workwell.habitatzero.model.Planta
 import com.workwell.habitatzero.model.PlantaRequest
+import com.workwell.habitatzero.model.SensorAmbiente
 import com.workwell.habitatzero.model.SensorLeituraResponse
 import com.workwell.habitatzero.model.TokenDTO
 import retrofit2.Response
