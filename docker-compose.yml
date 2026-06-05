@@ -12,11 +12,11 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      test: ["CMD", "mysql", "-uroot", "-proot", "habitat_zero", "-e", "SELECT 1"]
       interval: 10s
       timeout: 5s
-      retries: 10
-      start_period: 30s
+      retries: 15
+      start_period: 40s
 
   backend:
     build:
@@ -37,8 +37,8 @@ services:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/api-docs > /dev/null || exit 1"]
       interval: 15s
       timeout: 10s
-      retries: 8
-      start_period: 60s
+      retries: 10
+      start_period: 90s
 
   iot-simulator:
     build:
