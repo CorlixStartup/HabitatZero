@@ -1,33 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme -->
-    <style name="Theme.HabitatZero" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Paleta principal futurista -->
+    <style name="Theme.HabitatZero" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/azul_neon</item>
         <item name="colorOnPrimary">@android:color/white</item>
         <item name="colorSecondary">@color/verde_tecnologico</item>
         <item name="colorOnSecondary">@android:color/white</item>
         <item name="colorTertiary">@color/amarelo_atencao</item>
         <item name="colorOnTertiary">@color/black</item>
-
-        <!-- Paleta de alerta -->
         <item name="colorError">@color/vermelho_alerta</item>
         <item name="colorOnError">@android:color/white</item>
-
-        <!-- Cores de fundo e superfície (Tema Claro) -->
-        <item name="android:windowBackground">@android:color/white</item>
-        <item name="colorSurface">@android:color/white</item>
-        <item name="colorOnSurface">@color/black</item>
-        <item name="colorOnBackground">@color/black</item>
-
-        <!-- Status Bar -->
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowBackground">@color/bg_dark</item>
+        <item name="colorSurface">@color/bg_surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="android:statusBarColor">@color/bg_dark</item>
+        <item name="android:navigationBarColor">@color/bg_dark</item>
     </style>
 
-    <!-- Novo Tema Splash customizado (conforme guia, corrigido) -->
     <style name="Theme.HabitatZero.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@android:color/white</item>
+        <item name="windowSplashScreenBackground">@color/bg_dark</item>
         <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
         <item name="postSplashScreenTheme">@style/Theme.HabitatZero</item>
     </style>

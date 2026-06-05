@@ -1,26 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Paleta principal futurista -->
-    <color name="colorPrimary">#0D47A1</color> <!-- Azul neon -->
-    <color name="colorPrimaryDark">#002171</color>
-    <color name="colorAccent">#00E676</color> <!-- Verde tecnológico -->
+    <!-- Brand -->
+    <color name="colorPrimary">#2962FF</color>
+    <color name="colorPrimaryDark">#0039CB</color>
+    <color name="colorAccent">#00E676</color>
 
-    <!-- Paleta alternativa -->
-    <color name="teal_700">#018786</color>
-    <color name="teal_200">#03DAC5</color>
-    <color name="purple_200">#BB86FC</color>
-    <color name="purple_700">#3700B3</color>
+    <!-- Dark background layers -->
+    <color name="bg_dark">#0D0D1A</color>
+    <color name="bg_surface">#1A1A2E</color>
+    <color name="bg_card">#16213E</color>
 
-    <!-- Cores para alertas -->
-    <color name="verde_normal">#4CAF50</color>       <!-- Verde: dentro do limite -->
-    <color name="amarelo_atencao">#FFC107</color>    <!-- Amarelo: atenção -->
-    <color name="vermelho_critico">#F44336</color>   <!-- Vermelho: crítico -->
+    <!-- Card states -->
+    <color name="card_normal">#1A1A2E</color>
+    <color name="card_alerta">#2D1010</color>
+    <color name="sensor_normal_border">#2962FF</color>
 
-    <!-- Extras para tema futurista -->
+    <!-- Sensor value colors -->
+    <color name="sensor_temperatura">#FF7043</color>
+    <color name="sensor_umidade">#29B6F6</color>
+    <color name="sensor_oxigenio">#00E676</color>
+    <color name="sensor_radiacao">#CE93D8</color>
+
+    <!-- Status colors -->
+    <color name="verde_normal">#00C853</color>
+    <color name="amarelo_atencao">#FFD600</color>
+    <color name="vermelho_critico">#FF1744</color>
+
+    <!-- Text -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#9E9E9E</color>
+
+    <!-- Legacy names kept for compatibility -->
     <color name="azul_neon">#2962FF</color>
     <color name="verde_tecnologico">#00E676</color>
     <color name="vermelho_alerta">#FF1744</color>
-
-    <!-- Cor preta usada em ícones/adapters -->
     <color name="black">#000000</color>
+    <color name="teal_200">#03DAC5</color>
+    <color name="teal_700">#018786</color>
+    <color name="purple_200">#BB86FC</color>
+    <color name="purple_700">#3700B3</color>
 </resources>

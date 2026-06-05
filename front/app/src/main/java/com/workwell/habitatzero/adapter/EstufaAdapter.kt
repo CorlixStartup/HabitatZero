@@ -28,12 +28,21 @@ class EstufaAdapter(private var estufas: List<Estufa>) :
     }
 
     override fun onBindViewHolder(holder: EstufaViewHolder, position: Int) {
+        val ctx = holder.itemView.context
         val estufa = estufas[position]
         holder.tvNome.text = estufa.nome
-        holder.tvStatus.text = estufa.status
         holder.tvLocalizacao.text = estufa.localizacao
-        holder.tvPlantas.text = holder.itemView.context.getString(R.string.label_plantas, estufa.totalPlantas)
-        holder.tvAlertas.text = holder.itemView.context.getString(R.string.label_alertas_ativos, estufa.alertasAtivos)
+        holder.tvPlantas.text = estufa.totalPlantas.toString()
+        holder.tvAlertas.text = estufa.alertasAtivos.toString()
+
+        val (statusText, statusColor) = when (estufa.status) {
+            "ATIVA"      -> "● ATIVA"      to ctx.getColor(R.color.verde_normal)
+            "MANUTENCAO" -> "⚙ MANUTENÇÃO" to ctx.getColor(R.color.amarelo_atencao)
+            else         -> "○ INATIVA"    to ctx.getColor(R.color.text_secondary)
+        }
+        holder.tvStatus.text = statusText
+        holder.tvStatus.setTextColor(statusColor)
+
         holder.itemView.setOnClickListener { onItemClick?.invoke(estufa) }
     }
 

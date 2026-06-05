@@ -5,43 +5,53 @@
     android:id="@+id/cardEstufa"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="16dp"
     app:cardElevation="4dp"
-    app:contentPadding="16dp"
-    app:cardBackgroundColor="?attr/colorSurface">
+    app:cardBackgroundColor="@color/bg_card"
+    app:strokeColor="@color/sensor_normal_border"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvNomeEstufa"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nome da Estufa"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:textColor="?attr/colorPrimary"
-            android:paddingBottom="4dp"/>
+            android:orientation="horizontal"
+            android:layout_marginBottom="6dp">
+
+            <TextView
+                android:id="@+id/tvNomeEstufa"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Estufa"
+                android:textColor="@color/text_primary"
+                android:textSize="17sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvStatusEstufa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ATIVA"
+                android:textColor="@color/verde_normal"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvLocalizacaoEstufa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Localização"
-            android:textSize="14sp"
-            android:paddingBottom="4dp"/>
-
-        <TextView
-            android:id="@+id/tvStatusEstufa"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Status"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:paddingBottom="8dp"/>
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:layout_marginBottom="12dp"/>
 
         <GridLayout
             android:layout_width="match_parent"
@@ -49,23 +59,51 @@
             android:columnCount="2"
             android:rowCount="1">
 
-            <TextView
-                android:id="@+id/tvPlantasEstufa"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
-                android:text="Plantas: --"
-                android:textSize="14sp"
-                android:paddingBottom="4dp"/>
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvAlertasEstufa"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🌿 Plantas"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"/>
+
+                <TextView
+                    android:id="@+id/tvPlantasEstufa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--"
+                    android:textColor="@color/sensor_oxigenio"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
-                android:text="Alertas: --"
-                android:textSize="14sp"
-                android:paddingBottom="4dp"/>
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⚠ Alertas"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"/>
+
+                <TextView
+                    android:id="@+id/tvAlertasEstufa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--"
+                    android:textColor="@color/amarelo_atencao"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
         </GridLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

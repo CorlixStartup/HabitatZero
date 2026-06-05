@@ -1,18 +1,12 @@
 package com.workwell.habitatzero.ui
 
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.content.pm.PackageManager
-import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -23,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
@@ -39,6 +34,10 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var tvUmidade: TextView
     private lateinit var tvOxigenio: TextView
     private lateinit var tvRadiacao: TextView
+    private lateinit var tvStatusTemperatura: TextView
+    private lateinit var tvStatusUmidade: TextView
+    private lateinit var tvStatusOxigenio: TextView
+    private lateinit var tvStatusRadiacao: TextView
 
     private lateinit var cardTemperatura: MaterialCardView
     private lateinit var cardUmidade: MaterialCardView
@@ -46,10 +45,12 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var cardRadiacao: MaterialCardView
 
     private lateinit var progressBar: ProgressBar
+    private lateinit var tvSemDados: TextView
 
     private lateinit var chartTemperatura: LineChart
     private lateinit var chartUmidade: LineChart
     private lateinit var chartOxigenio: LineChart
+    private lateinit var chartRadiacao: LineChart
 
     private val viewModel: DashboardViewModel by viewModels {
         DashboardViewModelFactory(HabitatZeroRepository())
@@ -67,51 +68,30 @@ class DashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        tvTemperatura = findViewById(R.id.tvTemperatura)
-        tvUmidade = findViewById(R.id.tvUmidade)
-        tvOxigenio = findViewById(R.id.tvOxigenio)
-        tvRadiacao = findViewById(R.id.tvRadiacao)
+        tvTemperatura       = findViewById(R.id.tvTemperatura)
+        tvUmidade           = findViewById(R.id.tvUmidade)
+        tvOxigenio          = findViewById(R.id.tvOxigenio)
+        tvRadiacao          = findViewById(R.id.tvRadiacao)
+        tvStatusTemperatura = findViewById(R.id.tvStatusTemperatura)
+        tvStatusUmidade     = findViewById(R.id.tvStatusUmidade)
+        tvStatusOxigenio    = findViewById(R.id.tvStatusOxigenio)
+        tvStatusRadiacao    = findViewById(R.id.tvStatusRadiacao)
+        cardTemperatura     = findViewById(R.id.cardTemperatura)
+        cardUmidade         = findViewById(R.id.cardUmidade)
+        cardOxigenio        = findViewById(R.id.cardOxigenio)
+        cardRadiacao        = findViewById(R.id.cardRadiacao)
+        progressBar         = findViewById(R.id.progressBar)
+        tvSemDados          = findViewById(R.id.tvSemDados)
+        chartTemperatura    = findViewById(R.id.chartTemperatura)
+        chartUmidade        = findViewById(R.id.chartUmidade)
+        chartOxigenio       = findViewById(R.id.chartOxigenio)
+        chartRadiacao       = findViewById(R.id.chartRadiacao)
 
-        cardTemperatura = findViewById(R.id.cardTemperatura)
-        cardUmidade = findViewById(R.id.cardUmidade)
-        cardOxigenio = findViewById(R.id.cardOxigenio)
-        cardRadiacao = findViewById(R.id.cardRadiacao)
-
-        progressBar = findViewById(R.id.progressBar)
-
-        chartTemperatura = findViewById(R.id.chartTemperatura)
-        chartUmidade = findViewById(R.id.chartUmidade)
-        chartOxigenio = findViewById(R.id.chartOxigenio)
+        listOf(chartTemperatura, chartUmidade, chartOxigenio, chartRadiacao).forEach { setupChart(it) }
 
         setupObservers()
-        viewModel.carregarSensores()
-    }
-
-    private fun setupObservers() {
-        viewModel.sensorLiveData.observe(this) { sensor ->
-            progressBar.visibility = View.GONE
-            tvTemperatura.text = getString(R.string.label_temperatura, sensor.temperatura)
-            tvUmidade.text = getString(R.string.label_umidade, sensor.umidade)
-            tvOxigenio.text = getString(R.string.label_oxigenio, sensor.oxigenio)
-            tvRadiacao.text = getString(R.string.label_radiacao, sensor.radiacao)
-
-            animarTexto(tvTemperatura)
-            animarTexto(tvUmidade)
-            animarTexto(tvOxigenio)
-            animarTexto(tvRadiacao)
-
-            aplicarCor(cardTemperatura, sensor.temperatura, 18.0, 26.0, getString(R.string.titulo_temperatura))
-            aplicarCor(cardUmidade, sensor.umidade, 40.0, 70.0, getString(R.string.titulo_umidade))
-            aplicarCor(cardOxigenio, sensor.oxigenio, 19.0, 23.0, getString(R.string.titulo_oxigenio))
-            aplicarCor(cardRadiacao, sensor.radiacao, 0.0, 1.0, getString(R.string.titulo_radiacao))
-
-            atualizarGraficos(sensor)
-        }
-
-        viewModel.errorLiveData.observe(this) { error ->
-            progressBar.visibility = View.GONE
-            Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
-        }
+        requestNotificationPermission()
+        createNotificationChannel()
     }
 
     override fun onResume() {
@@ -129,140 +109,155 @@ class DashboardActivity : AppCompatActivity() {
         handler.removeCallbacks(updateRunnable)
     }
 
-    private fun atualizarGraficos(sensor: SensorAmbiente) {
-        val temperaturaEntries: List<Entry> = listOf(Entry(0f, sensor.temperatura.toFloat()))
-        val umidadeEntries: List<Entry> = listOf(Entry(0f, sensor.umidade.toFloat()))
-        val oxigenioEntries: List<Entry> = listOf(Entry(0f, sensor.oxigenio.toFloat()))
-
-        val temperaturaDataSet = LineDataSet(temperaturaEntries, "Temperatura (°C)")
-        temperaturaDataSet.color = getColor(R.color.azul_neon)
-
-        val umidadeDataSet = LineDataSet(umidadeEntries, "Umidade (%)")
-        umidadeDataSet.color = getColor(R.color.verde_tecnologico)
-
-        val oxigenioDataSet = LineDataSet(oxigenioEntries, "Oxigênio (%)")
-        oxigenioDataSet.color = getColor(R.color.amarelo_atencao)
-
-        chartTemperatura.data = LineData(temperaturaDataSet)
-        chartUmidade.data = LineData(umidadeDataSet)
-        chartOxigenio.data = LineData(oxigenioDataSet)
-
-        chartTemperatura.invalidate()
-        chartUmidade.invalidate()
-        chartOxigenio.invalidate()
-
-        chartTemperatura.animateX(1000)
-        chartUmidade.animateY(1000)
-        chartOxigenio.animateXY(1000, 1000)
+    private fun setupChart(chart: LineChart) {
+        chart.apply {
+            description.isEnabled = false
+            setTouchEnabled(false)
+            isDragEnabled = false
+            setScaleEnabled(false)
+            setDrawGridBackground(false)
+            setNoDataText("")
+            legend.isEnabled = false
+            axisRight.isEnabled = false
+            axisLeft.apply {
+                textColor = 0xFFAAAAAA.toInt()
+                gridColor = 0x22FFFFFF.toInt()
+                axisLineColor = 0x44FFFFFF.toInt()
+                setDrawAxisLine(true)
+            }
+            xAxis.apply {
+                position = XAxis.XAxisPosition.BOTTOM
+                textColor = 0xFFAAAAAA.toInt()
+                gridColor = 0x22FFFFFF.toInt()
+                setDrawLabels(false)
+            }
+            setBackgroundColor(0xFF1A1A2E.toInt())
+        }
     }
 
-    private fun aplicarCor(card: MaterialCardView, valor: Double, min: Double, max: Double, nome: String) {
-        val cor = when {
-            valor in min..max -> getColor(R.color.verde_normal)
-            valor < min -> {
-                mostrarNotificacao("Alerta de $nome", "$nome abaixo do limite: $valor")
-                tocarSomCritico()
-                vibrarCritico()
-                animarCard(card)
-                getColor(R.color.vermelho_critico)
-            }
-            else -> {
-                mostrarNotificacao("Alerta de $nome", "$nome acima do limite: $valor")
-                tocarSomCritico()
-                vibrarCritico()
-                animarCard(card)
-                getColor(R.color.vermelho_critico)
+    private fun setupObservers() {
+        viewModel.sensorLiveData.observe(this) { sensor ->
+            progressBar.visibility = View.GONE
+            tvSemDados.visibility = View.GONE
+
+            tvTemperatura.text = getString(R.string.valor_temperatura, sensor.temperatura)
+            tvUmidade.text = getString(R.string.valor_umidade, sensor.umidade)
+            tvOxigenio.text = getString(R.string.valor_oxigenio, sensor.oxigenio)
+            tvRadiacao.text = getString(R.string.valor_radiacao, sensor.radiacao)
+
+            aplicarStatus(cardTemperatura, tvStatusTemperatura, sensor.temperatura, 18.0, 26.0,
+                getString(R.string.titulo_temperatura))
+            aplicarStatus(cardUmidade, tvStatusUmidade, sensor.umidade, 40.0, 70.0,
+                getString(R.string.titulo_umidade))
+            aplicarStatus(cardOxigenio, tvStatusOxigenio, sensor.oxigenio, 19.5, 23.0,
+                getString(R.string.titulo_oxigenio))
+            aplicarStatus(cardRadiacao, tvStatusRadiacao, sensor.radiacao, 0.0, 2.0,
+                getString(R.string.titulo_radiacao), invertido = true)
+        }
+
+        viewModel.historyLiveData.observe(this) { history ->
+            if (history.size >= 2) {
+                atualizarGraficos(history)
             }
         }
-        card.setCardBackgroundColor(cor)
+
+        viewModel.errorLiveData.observe(this) { error ->
+            progressBar.visibility = View.GONE
+            Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+        }
     }
 
-    private fun animarCard(card: MaterialCardView) {
-        val animator = ObjectAnimator.ofFloat(card, "alpha", 0.5f, 1f)
-        animator.duration = 800
-        animator.repeatMode = ValueAnimator.REVERSE
-        animator.repeatCount = 2
-        animator.start()
+    private fun atualizarGraficos(history: List<SensorAmbiente>) {
+        fun buildSet(values: List<Float>, label: String, color: Int): LineDataSet {
+            val entries = values.mapIndexed { i, v -> Entry(i.toFloat(), v) }
+            return LineDataSet(entries, label).apply {
+                this.color = color
+                setDrawCircles(false)
+                setDrawValues(false)
+                lineWidth = 2f
+                mode = LineDataSet.Mode.CUBIC_BEZIER
+                fillAlpha = 60
+                setDrawFilled(true)
+                fillColor = color
+            }
+        }
+
+        val tempColor  = getColor(R.color.sensor_temperatura)
+        val umidColor  = getColor(R.color.sensor_umidade)
+        val o2Color    = getColor(R.color.sensor_oxigenio)
+        val radColor   = getColor(R.color.sensor_radiacao)
+
+        chartTemperatura.data = LineData(buildSet(history.map { it.temperatura.toFloat() }, "°C", tempColor))
+        chartUmidade.data     = LineData(buildSet(history.map { it.umidade.toFloat() }, "%", umidColor))
+        chartOxigenio.data    = LineData(buildSet(history.map { it.oxigenio.toFloat() }, "%", o2Color))
+        chartRadiacao.data    = LineData(buildSet(history.map { it.radiacao.toFloat() }, "mSv/h", radColor))
+
+        listOf(chartTemperatura, chartUmidade, chartOxigenio, chartRadiacao).forEach {
+            it.notifyDataSetChanged()
+            it.invalidate()
+        }
     }
 
-    private fun animarTexto(view: TextView) {
-        view.alpha = 0f
-        view.animate().alpha(1f).setDuration(600).start()
+    private fun aplicarStatus(
+        card: MaterialCardView,
+        tvStatus: TextView,
+        valor: Double,
+        min: Double,
+        max: Double,
+        nome: String,
+        invertido: Boolean = false
+    ) {
+        val normal = if (!invertido) valor in min..max else valor <= max
+        if (normal) {
+            card.setCardBackgroundColor(getColor(R.color.card_normal))
+            card.strokeColor = getColor(R.color.sensor_normal_border)
+            tvStatus.text = "● NORMAL"
+            tvStatus.setTextColor(getColor(R.color.verde_normal))
+        } else {
+            card.setCardBackgroundColor(getColor(R.color.card_alerta))
+            card.strokeColor = getColor(R.color.vermelho_critico)
+            tvStatus.text = "⚠ ALERTA"
+            tvStatus.setTextColor(getColor(R.color.vermelho_critico))
+            mostrarNotificacao("Alerta de $nome", "$nome fora do limite: $valor")
+        }
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 100)
+        }
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(CHANNEL_ID, "Alertas de Sensores",
+                NotificationManager.IMPORTANCE_HIGH).apply { enableVibration(true) }
+            (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
+                .createNotificationChannel(channel)
+        }
     }
 
     private fun mostrarNotificacao(titulo: String, mensagem: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
-                != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 100)
-                return
-            }
-        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+            != PackageManager.PERMISSION_GRANTED) return
 
-        val channelId = "alertas_sensores"
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Alertas de Sensores",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                enableVibration(true)
-                vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
-            }
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        val builder = NotificationCompat.Builder(this, channelId)
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(titulo)
             .setContentText(mensagem)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
+            .build()
 
-        notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())
+        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
+            .notify(System.currentTimeMillis().toInt(), notification)
     }
 
-    private fun tocarSomNormal() {
-        try {
-            val notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-            val r = RingtoneManager.getRingtone(applicationContext, notification)
-            r.play()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun tocarSomCritico() {
-        try {
-            val alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-            val r = RingtoneManager.getRingtone(applicationContext, alert)
-            r.play()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun vibrarNormal() {
-        val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as android.os.VibratorManager
-            vibratorManager.defaultVibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
-        }
-    }
-
-    private fun vibrarCritico() {
-        val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as android.os.VibratorManager
-            vibratorManager.defaultVibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 500, 200, 500), -1))
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 500, 200, 500), -1))
-        }
+    companion object {
+        private const val CHANNEL_ID = "alertas_sensores"
     }
 }

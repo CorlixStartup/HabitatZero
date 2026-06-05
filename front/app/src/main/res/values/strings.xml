@@ -60,4 +60,10 @@
 
     <!-- Controle Climático — estufa selecionada -->
     <string name="label_estufa_selecionada">Estufa: %1$s</string>
+
+    <!-- Dashboard — valores de sensor formatados -->
+    <string name="valor_temperatura">%1$.1f°C</string>
+    <string name="valor_umidade">%1$.1f%%</string>
+    <string name="valor_oxigenio">%1$.1f%%</string>
+    <string name="valor_radiacao">%1$.2f mSv/h</string>
 </resources>

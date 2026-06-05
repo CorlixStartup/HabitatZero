@@ -14,24 +14,36 @@ class DashboardViewModel(private val repository: HabitatZeroRepository) : ViewMo
     private val _sensorLiveData = MutableLiveData<SensorAmbiente>()
     val sensorLiveData: LiveData<SensorAmbiente> = _sensorLiveData
 
+    private val _historyLiveData = MutableLiveData<List<SensorAmbiente>>()
+    val historyLiveData: LiveData<List<SensorAmbiente>> = _historyLiveData
+
     private val _estufasLiveData = MutableLiveData<List<Estufa>>()
     val estufasLiveData: LiveData<List<Estufa>> = _estufasLiveData
 
     private val _errorLiveData = MutableLiveData<String>()
     val errorLiveData: LiveData<String> = _errorLiveData
 
+    private val history = ArrayDeque<SensorAmbiente>(HISTORY_SIZE)
+
     fun carregarSensores() {
         viewModelScope.launch {
             try {
                 val response = repository.buscarSensores()
-                if (response.isSuccessful && response.body() != null) {
-                    val leituras = response.body()!!
-                    _sensorLiveData.postValue(repository.converterParaSensorAmbiente(leituras))
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (!body.isNullOrEmpty()) {
+                        val ambient = repository.converterParaSensorAmbiente(body)
+                        if (history.size >= HISTORY_SIZE) history.removeFirst()
+                        history.addLast(ambient)
+                        _sensorLiveData.postValue(ambient)
+                        _historyLiveData.postValue(history.toList())
+                    }
+                    // empty list is OK — IoT simulator may not have sent data yet, stay silent
                 } else {
-                    _errorLiveData.postValue("Erro ao carregar sensores")
+                    _errorLiveData.postValue("Erro ao carregar sensores: ${response.code()}")
                 }
             } catch (e: Exception) {
-                _errorLiveData.postValue("Falha: ${e.message}")
+                _errorLiveData.postValue("Falha de conexão: ${e.message}")
             }
         }
     }
@@ -43,11 +55,15 @@ class DashboardViewModel(private val repository: HabitatZeroRepository) : ViewMo
                 if (response.isSuccessful && response.body() != null) {
                     _estufasLiveData.postValue(response.body())
                 } else {
-                    _errorLiveData.postValue("Erro ao carregar estufas")
+                    _errorLiveData.postValue("Erro ao carregar estufas: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _errorLiveData.postValue("Falha: ${e.message}")
             }
         }
+    }
+
+    companion object {
+        const val HISTORY_SIZE = 20
     }
 }
