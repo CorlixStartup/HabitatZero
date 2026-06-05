@@ -46,14 +46,12 @@ Em uma colônia espacial, falhas nos sistemas de suporte de vida podem ser letai
 
 ## 🗂️ Estrutura do Repositório
 
-Este projeto é dividido em **módulos independentes**, cada um com seu próprio repositório. Este README é compartilhado entre todos eles.
-
 ```
 habitatzero/
-├── backend/      # Backend Spring Boot (este repositório se módulo API)
-├── mobile/       # Aplicativo Android Studio
-├── iot/          # Firmware ESP32 + simulações de sensores
-├── db/           # Scripts SQL (DDL + DML + consultas)
+├── backend/      # API Spring Boot (Java 21)
+├── frontend/     # Aplicativo Android (Kotlin)
+├── IoT/          # Firmware ESP32 + simulador Python
+├── db/           # Scripts SQL (DDL + DML)
 └── README.md     # Este arquivo
 ```
 
@@ -72,7 +70,7 @@ habitatzero/
 │   └──────────────┘                └───────────┬────────────┘   │
 │                                               │ JPA/Hibernate   │
 │   ┌──────────────┐   MQTT / HTTP  ┌───────────▼────────────┐   │
-│   │    ESP32     │ ──────────────► │       MySQL 8.0        │   │
+│   │    ESP32     │ ──────────────► │       MySQL            │   │
 │   │  (Sensores   │                │  (Estufa / Planta /    │   │
 │   │   IoT)       │                │  Sensor / Colono)      │   │
 │   └──────────────┘                └────────────────────────┘   │
@@ -123,7 +121,7 @@ habitatzero/
 
 ### Script DDL Principal
 
-O script completo está em [`db/script.sql`](db/script.sql). Resumo das tabelas:
+O script completo está em [`db/script_habitat_zero.sql`](db/script_habitat_zero.sql). Resumo das tabelas:
 
 | Tabela | Colunas principais |
 |--------|-------------------|
@@ -406,55 +404,102 @@ cd IoT && pip install pytest requests && pytest test_integration.py -v
 
 ---
 
-## 📱 Módulo 5 — Front-end Mobile (Android Studio)
+## 📱 Módulo 5 — Front-end Mobile (Android)
+
+### Stack Técnica
+
+| Tecnologia | Versão | Uso |
+|---|---|---|
+| Kotlin | — | Linguagem principal |
+| Android SDK | API 26–37 | Plataforma mobile |
+| Retrofit 2 | 2.9.0 | Cliente HTTP para a API REST |
+| OkHttp | 4.9.3 | Interceptor de logging e JWT |
+| Coroutines | 1.7.3 | Requisições assíncronas |
+| ViewModel + LiveData | 2.6.2 | Arquitetura MVVM |
+| Room | 2.6.1 | Persistência local (histórico e configurações) |
+| MPAndroidChart | v3.1.0 | Gráficos de linha para sensores |
+| Firebase Messaging | 23.0.0 | Push notifications |
+| Material Design 3 | — | UI Components |
+| Lottie | 6.0.0 | Animações |
+
+### Arquitetura
+
+O aplicativo segue o padrão **MVVM** com Repository:
+
+```
+Activity (UI Layer)
+    └── observa LiveData
+ViewModel (Business Logic)
+    └── chama Repository
+Repository (Data Layer)
+    ├── RetrofitClient → API Spring Boot
+    └── Room Database  → SQLite local
+```
 
 ### Telas do Aplicativo
 
-```
-┌─────────────────┐    Login    ┌─────────────────────┐   Configurar  ┌──────────────────┐
-│   TELA 1        │ ──────────► │     TELA 2          │ ────────────► │    TELA 3        │
-│   Login do      │             │  Painel de Controle │               │  Ajustes de      │
-│   Colono        │             │  da Estufa          │               │  Clima           │
-│                 │             │                     │               │                  │
-│ [Email]         │             │ ┌──────────────┐    │               │ O₂:  [slider]    │
-│ [Senha]         │             │ │ Estufa Alpha │    │               │ Umid:[slider]    │
-│ [ENTRAR]        │             │ │ O₂:  21.2%  ✅│    │               │ Temp:[slider]    │
-└─────────────────┘             │ │ Umid: 65%   ✅│    │               │ [SALVAR]         │
-                                │ │ Temp: 22°C  ✅│    │               └──────────────────┘
-                                │ └──────────────┘    │
-                                │ ┌──────────────┐    │
-                                │ │ Estufa Beta  │    │
-                                │ │ O₂:  18.1%  🔴│    │
-                                │ │ ALERTA ATIVO │    │
-                                │ └──────────────┘    │
-                                └─────────────────────┘
-```
+| Tela | Arquivo | Descrição | Endpoints usados |
+|---|---|---|---|
+| **Login** | `LoginActivity` | Autenticação com email/senha, JWT armazenado em SharedPreferences | `POST /auth/login` |
+| **Dashboard** | `DashboardActivity` | Gráficos em tempo real dos sensores, polling a cada 5 segundos | `GET /sensores/leituras`, `GET /estufas` |
+| **Estufas** | `EstufasActivity` | Lista de todas as estufas com status, total de plantas e alertas ativos | `GET /estufas` |
+| **Controle Climático** | `ControleClimaticoActivity` | Ajuste dos thresholds de temperatura e umidade de uma estufa selecionada | `PUT /estufas/{id}` |
+| **Alertas** | `AlertasActivity` | Lista de alertas ativos com código de cores por severidade (ATENCAO/CRITICO/EMERGENCIA) | `GET /alertas` |
+| **Histórico** | `HistoricoActivity` | Histórico local das configurações climáticas aplicadas | Room DB |
 
-### Dependências (build.gradle)
-
-```gradle
-dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
-    implementation 'androidx.recyclerview:recyclerview:1.3.2'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-
-    // Requisições HTTP para a API
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
-
-    // Armazenamento seguro do JWT
-    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
-}
-```
-
-### Estrutura de Navegação
+### Navegação
 
 ```
 LoginActivity
-    └── [intent] ──► PainelEstufaActivity (tela principal)
-                         └── [intent + estufaId] ──► AjustesClimaActivity
+    └── [intent] ──► MainActivity (Bottom Navigation)
+                         ├── [nav_dashboard]  ──► DashboardActivity
+                         ├── [nav_estufas]    ──► EstufasActivity
+                         │                            └── [item click] ──► ControleClimaticoActivity
+                         ├── [nav_alertas]    ──► AlertasActivity
+                         └── [nav_controle]   ──► ControleClimaticoActivity
+```
+
+### Autenticação JWT
+
+- O token é salvo em `SharedPreferences` com chave `token` após login bem-sucedido
+- O `JWTInterceptor` injeta automaticamente o header `Authorization: Bearer <token>` em todas as requisições
+- O `AuthInterceptor` captura respostas HTTP 401, limpa o token e redireciona para `LoginActivity`
+
+### Configuração do Emulador vs Dispositivo Físico
+
+**Arquivo:** `frontend/app/src/main/java/com/workwell/habitatzero/api/RetrofitClient.kt`
+
+```kotlin
+// Emulador Android (10.0.2.2 mapeia para localhost da máquina host)
+private const val BASE_URL = "http://10.0.2.2:8080/"
+
+// Dispositivo físico na mesma rede Wi-Fi (substituir pelo IP da máquina)
+private const val BASE_URL = "http://192.168.X.X:8080/"
+```
+
+### Dependências (build.gradle.kts)
+
+```kotlin
+dependencies {
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.airbnb.android:lottie:6.0.0")
+    implementation("com.google.firebase:firebase-messaging:23.0.0")
+}
 ```
 
 ---
@@ -497,51 +542,143 @@ Os quatro tipos de sensor suportados e suas unidades:
 
 ### Pré-requisitos
 
-- Java 21+
-- Maven 3.8+
-- MySQL 9.6+
-- Android Studio Hedgehog (ou superior)
-- Python 3.x (apenas para simulação de sensores)
-- Arduino IDE 2.x + board ESP32 (opcional)
+| Ferramenta | Versão mínima | Uso |
+|---|---|---|
+| Java (JDK) | 21 | Compilar e executar o backend |
+| Maven | 3.8+ | Build do backend (ou usar o wrapper `./mvnw`) |
+| MySQL | 8.0+ (porta 3307) | Banco de dados |
+| Android Studio | Hedgehog (2023.1.1) ou superior | Abrir e rodar o projeto Android |
+| Python | 3.x | Simulador de sensores IoT (opcional) |
 
-### 1. Banco de Dados
+> **Atenção:** O backend está configurado para MySQL na **porta 3307** (não a padrão 3306). Confirme sua instalação do MySQL ou ajuste `application.properties` antes de iniciar.
+
+---
+
+### 1. Banco de Dados (MySQL)
+
+O banco é criado automaticamente pelo Spring Boot no primeiro start (via `createDatabaseIfNotExist=true`). Não é necessário executar o script manualmente para subir o projeto, mas caso queira inicializar com o schema explícito:
 
 ```bash
-# Criar o banco e executar o script
-mysql -u root -p < habitatzero-db/schema.sql
-mysql -u root -p habitatzero < habitatzero-db/seed.sql
+# Conecte no MySQL (ajuste o host/porta conforme necessário)
+mysql -u root -p --port=3307
+
+# Dentro do MySQL:
+source db/script_habitat_zero.sql
 ```
 
-### 2. API Spring Boot
+**Credenciais padrão** (configuráveis em `backend/src/main/resources/application.properties`):
+```
+Host:     localhost:3307
+Database: habitat_zero
+User:     root
+Password: root
+```
+
+---
+
+### 2. Backend (Spring Boot)
 
 ```bash
-cd habitatzero-api
+# Entre na pasta do backend
+cd backend
 
-# Editar credenciais em src/main/resources/application.properties
+# (Opcional) Edite as credenciais do banco se necessário:
+# src/main/resources/application.properties
 
-# Compilar e executar
+# Execute o backend com o Maven Wrapper (não requer Maven instalado)
 ./mvnw spring-boot:run
-
-# A API estará disponível em:
-# http://localhost:8080
-# Swagger: http://localhost:8080/swagger-ui.html
+# No Windows:
+mvnw.cmd spring-boot:run
 ```
 
-### 3. Simulação IoT (sem hardware)
+O backend estará disponível em:
+- **API:** `http://localhost:8080`
+- **Swagger UI:** `http://localhost:8080/swagger-ui.html`
+- **OpenAPI JSON:** `http://localhost:8080/api-docs`
+
+> O primeiro start pode ser lento (~30–60s) enquanto o Maven baixa as dependências e o Hibernate cria as tabelas.
+
+---
+
+### 3. Simulador IoT (opcional — sem hardware ESP32)
+
+O endpoint `POST /sensores/leitura` é público (sem autenticação), permitindo simular leituras de sensores sem um ESP32 físico.
 
 ```bash
-# O endpoint POST /sensores/leitura é público — não requer autenticação
+# Entre na pasta de IoT
 cd IoT
+
+# Instale a dependência
 pip install requests
-python3 esp32_simulator.py
+
+# Execute o simulador (requer backend em execução)
+python esp32_simulator.py
 ```
 
-### 4. Aplicativo Android
+O simulador envia leituras aleatórias para todas as estufas cadastradas. Para rodar os testes de integração:
 
+```bash
+pip install pytest requests
+pytest test_integration.py -v
 ```
-1. Abrir habitatzero-mobile/ no Android Studio
-2. Editar BASE_URL no arquivo RetrofitClient.java com o IP da sua máquina
-3. Executar em emulador (API 26+) ou dispositivo físico
+
+---
+
+### 4. Aplicativo Android (Frontend Mobile)
+
+**Pré-requisito Firebase:** O projeto usa Firebase Cloud Messaging para push notifications. Você precisará de um arquivo `google-services.json` válido:
+- Crie um projeto no [Firebase Console](https://console.firebase.google.com/)
+- Adicione um app Android com package name `com.workwell.habitatzero`
+- Baixe o `google-services.json` gerado
+- Coloque o arquivo em `frontend/app/google-services.json`
+
+> **Sem Firebase:** O build ainda funciona se você remover a dependência `firebase-messaging` do `build.gradle.kts` e a classe `MyFirebaseMessagingService` do `AndroidManifest.xml`. As push notifications serão desativadas, mas o app funcionará normalmente.
+
+**Passos:**
+
+1. Abra o Android Studio → `File > Open` → selecione a pasta `frontend/`
+
+2. Aguarde o Gradle sync terminar (pode levar alguns minutos na primeira vez)
+
+3. Configure o endereço do backend em `frontend/app/src/main/java/com/workwell/habitatzero/api/RetrofitClient.kt`:
+
+   ```kotlin
+   // Se rodar em emulador (Android Virtual Device):
+   private const val BASE_URL = "http://10.0.2.2:8080/"
+
+   // Se rodar em dispositivo físico (substitua pelo IP da sua máquina):
+   private const val BASE_URL = "http://192.168.X.X:8080/"
+   ```
+
+   Para descobrir o IP da sua máquina:
+   - Windows: `ipconfig` → campo "Endereço IPv4"
+   - Linux/macOS: `hostname -I`
+
+4. Clique em **Run ▶** (ou `Shift+F10`) para compilar e instalar no emulador/dispositivo
+
+5. O emulador precisa ser **API 26+** (Android 8.0 Oreo). Para criar um AVD: `Tools > Device Manager > Create Virtual Device`
+
+**Credencial de teste:** Crie um colono via `POST /colonos` pelo Swagger antes de fazer login no app:
+
+```json
+{
+  "nome": "Comandante Silva",
+  "email": "silva@habitatzero.br",
+  "senha": "Senha@123",
+  "cargo": "COMANDANTE"
+}
+```
+
+---
+
+### 5. Testes
+
+```bash
+# Testes unitários do backend (sem banco de dados)
+cd backend && ./mvnw test
+
+# Testes de integração IoT (requer backend + MySQL em execução)
+cd IoT && pip install pytest requests && pytest test_integration.py -v
 ```
 
 ---
@@ -561,10 +698,10 @@ python3 esp32_simulator.py
 
 ```
 habitatzero-entrega.zip
-├── habitatzero-api/          # Código-fonte Spring Boot completo
-├── habitatzero-mobile/       # Projeto Android Studio completo
-├── habitatzero-iot/          # Firmware ESP32 + simulate_sensors.py
-├── habitatzero-db/           # schema.sql + seed.sql + consultas.sql
+├── backend/                  # Código-fonte Spring Boot completo
+├── frontend/                 # Projeto Android Studio completo (Kotlin)
+├── IoT/                      # Firmware ESP32 + simulador Python
+├── db/                       # script_habitat_zero.sql + consultas
 ├── README.md                 # Este arquivo
 ├── documento.pdf             # Diagrama ER + casos de teste + prints + IoT
 └── grupo.txt                 # Nome do grupo, RMs, nomes e link do Vídeo Pitch
