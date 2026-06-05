@@ -36,9 +36,10 @@ class LoginActivity : AppCompatActivity() {
             val prefs = getSharedPreferences("HabitatZeroPrefs", Context.MODE_PRIVATE)
             prefs.edit().putString("token", token.token).apply()
 
-            Toast.makeText(this, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
+            Toast.makeText(this, "Bem-vindo, ${token.nome}!", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            })
         }
 
         loginViewModel.errorLiveData.observe(this) { error ->

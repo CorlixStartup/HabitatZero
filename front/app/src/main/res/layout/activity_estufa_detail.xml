@@ -16,7 +16,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_settings"
+            app:navigationIcon="?attr/homeAsUpIndicator"
             app:navigationContentDescription="Voltar"
             app:titleTextColor="@color/text_primary"
             app:title="Estufa"/>

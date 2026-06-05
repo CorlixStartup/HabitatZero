@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="visible"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monitoramento em Tempo Real"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/tvSemDados"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aguardando leituras do IoT…"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp"/>
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:rowCount="2"
+                android:layout_marginBottom="24dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardTemperatura"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_margin="6dp"
+                    app:cardCornerRadius="16dp" app:cardElevation="4dp"
+                    app:strokeWidth="1.5dp" app:cardBackgroundColor="@color/card_normal">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🌡 Temperatura" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginBottom="8dp"/>
+                        <TextView android:id="@+id/tvTemperatura" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--°C" android:textColor="@color/sensor_temperatura" android:textSize="26sp" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+                        <TextView android:id="@+id/tvStatusTemperatura" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="● AGUARDANDO" android:textColor="@color/text_secondary" android:textSize="11sp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardUmidade"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_margin="6dp"
+                    app:cardCornerRadius="16dp" app:cardElevation="4dp"
+                    app:strokeWidth="1.5dp" app:cardBackgroundColor="@color/card_normal">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💧 Umidade Solo" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginBottom="8dp"/>
+                        <TextView android:id="@+id/tvUmidade" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--%"  android:textColor="@color/sensor_umidade" android:textSize="26sp" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+                        <TextView android:id="@+id/tvStatusUmidade" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="● AGUARDANDO" android:textColor="@color/text_secondary" android:textSize="11sp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardOxigenio"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_margin="6dp"
+                    app:cardCornerRadius="16dp" app:cardElevation="4dp"
+                    app:strokeWidth="1.5dp" app:cardBackgroundColor="@color/card_normal">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🫧 Oxigênio" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginBottom="8dp"/>
+                        <TextView android:id="@+id/tvOxigenio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--%"  android:textColor="@color/sensor_oxigenio" android:textSize="26sp" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+                        <TextView android:id="@+id/tvStatusOxigenio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="● AGUARDANDO" android:textColor="@color/text_secondary" android:textSize="11sp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardRadiacao"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" android:layout_margin="6dp"
+                    app:cardCornerRadius="16dp" app:cardElevation="4dp"
+                    app:strokeWidth="1.5dp" app:cardBackgroundColor="@color/card_normal">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="☢ Radiação" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginBottom="8dp"/>
+                        <TextView android:id="@+id/tvRadiacao" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="-- mSv/h" android:textColor="@color/sensor_radiacao" android:textSize="26sp" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+                        <TextView android:id="@+id/tvStatusRadiacao" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="● AGUARDANDO" android:textColor="@color/text_secondary" android:textSize="11sp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </GridLayout>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Histórico de Leituras" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" android:layout_marginBottom="12dp"/>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🌡 Temperatura (°C)" android:textColor="@color/sensor_temperatura" android:textSize="12sp" android:layout_marginBottom="4dp"/>
+            <com.github.mikephil.charting.charts.LineChart android:id="@+id/chartTemperatura" android:layout_width="match_parent" android:layout_height="120dp" android:layout_marginBottom="16dp"/>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💧 Umidade Solo (%)" android:textColor="@color/sensor_umidade" android:textSize="12sp" android:layout_marginBottom="4dp"/>
+            <com.github.mikephil.charting.charts.LineChart android:id="@+id/chartUmidade" android:layout_width="match_parent" android:layout_height="120dp" android:layout_marginBottom="16dp"/>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🫧 Oxigênio (%)" android:textColor="@color/sensor_oxigenio" android:textSize="12sp" android:layout_marginBottom="4dp"/>
+            <com.github.mikephil.charting.charts.LineChart android:id="@+id/chartOxigenio" android:layout_width="match_parent" android:layout_height="120dp" android:layout_marginBottom="16dp"/>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="☢ Radiação (mSv/h)" android:textColor="@color/sensor_radiacao" android:textSize="12sp" android:layout_marginBottom="4dp"/>
+            <com.github.mikephil.charting.charts.LineChart android:id="@+id/chartRadiacao" android:layout_width="match_parent" android:layout_height="120dp" android:layout_marginBottom="16dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
