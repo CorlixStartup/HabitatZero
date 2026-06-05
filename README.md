@@ -504,6 +504,87 @@ dependencies {
 
 ---
 
+## 🐳 Docker — Execução com Contêineres
+
+A forma mais rápida de rodar o backend completo é via Docker Compose. Um único comando sobe o MySQL, a API Spring Boot e o simulador IoT — sem instalar Java, Maven ou MySQL na máquina.
+
+### Pré-requisitos
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (inclui Docker Engine + Compose)
+
+### Subindo tudo
+
+```bash
+# Na raiz do projeto (onde está o docker-compose.yml)
+docker compose up --build
+```
+
+Na primeira execução o Maven baixa as dependências e compila o JAR dentro do contêiner (~3–5 min). As execuções seguintes usam cache e sobem em segundos.
+
+### Serviços e portas
+
+| Serviço | Contêiner | Porta host | Descrição |
+|---|---|---|---|
+| MySQL 8.4 | `habitatzero-mysql` | `3307` | Banco de dados |
+| Spring Boot API | `habitatzero-backend` | `8080` | API REST + Swagger |
+| Simulador IoT | `habitatzero-iot` | — | Envia leituras a cada 5s |
+
+**URLs após o `docker compose up`:**
+- API: `http://localhost:8080`
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+
+### Sequência de inicialização
+
+O Compose garante a ordem correta via health checks:
+
+```
+MySQL (healthy) → Backend Spring Boot (healthy) → Simulador IoT
+```
+
+O backend aguarda o MySQL aceitar conexões antes de iniciar. O simulador aguarda o backend estar respondendo na `/api-docs`.
+
+### Comandos úteis
+
+```bash
+# Subir em background (sem travar o terminal)
+docker compose up --build -d
+
+# Ver logs de todos os serviços
+docker compose logs -f
+
+# Ver logs só do backend
+docker compose logs -f backend
+
+# Parar tudo (preserva o volume do banco)
+docker compose down
+
+# Parar e apagar o banco (reset total)
+docker compose down -v
+
+# Rebuild apenas de um serviço
+docker compose up --build backend
+```
+
+### Conectando o app Android ao backend em contêiner
+
+O backend fica exposto em `localhost:8080` da máquina host. Para o app Android conectar:
+
+**Emulador (AVD):**
+```kotlin
+// RetrofitClient.kt
+private const val BASE_URL = "http://10.0.2.2:8080/"
+```
+
+**Dispositivo físico:**
+```kotlin
+private const val BASE_URL = "http://SEU_IP_LOCAL:8080/"
+// Ex: "http://192.168.1.10:8080/"
+```
+
+Para descobrir seu IP local: `ipconfig` (Windows) ou `hostname -I` (Linux/macOS).
+
+---
+
 ## 🔌 Módulo 6 — IoT (ESP32)
 
 ### Sensores e Thresholds
@@ -540,7 +621,11 @@ Os quatro tipos de sensor suportados e suas unidades:
 
 ## 🚀 Como Executar o Projeto
 
-### Pré-requisitos
+> **Recomendado:** Use Docker Compose para subir MySQL + backend + simulador IoT com um único comando — veja a seção [🐳 Docker](#-docker--execução-com-contêineres) acima.
+>
+> As instruções abaixo descrevem a execução **manual** (sem Docker), útil para desenvolvimento do backend ou quando não se tem Docker disponível.
+
+### Pré-requisitos (execução manual)
 
 | Ferramenta | Versão mínima | Uso |
 |---|---|---|

@@ -1,11 +1,12 @@
+import os
 import time
 import random
 import requests
 from datetime import datetime
 
-API_URL = "http://localhost:8080/sensores/leitura"
-ESTUFA_ID = 1
-INTERVALO_ENVIO = 5  # Segundos
+API_URL = os.environ.get("API_URL", "http://localhost:8080/sensores/leitura")
+ESTUFA_ID = int(os.environ.get("ESTUFA_ID", "1"))
+INTERVALO_ENVIO = int(os.environ.get("INTERVALO_ENVIO", "5"))  # Segundos
 
 def gerar_leitura_mutante():
     """Simula o comportamento dos sensores com variações normais e críticas"""
