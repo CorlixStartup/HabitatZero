@@ -1,5 +1,6 @@
 package com.workwell.habitatzero.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -11,7 +12,6 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -22,14 +22,8 @@ import com.google.android.material.textfield.TextInputEditText
 import com.workwell.habitatzero.R
 import com.workwell.habitatzero.adapter.AlertaAdapter
 import com.workwell.habitatzero.adapter.PlantaAdapter
-import com.workwell.habitatzero.data.AppDatabase
-import com.workwell.habitatzero.data.ClimaConfig
-import com.workwell.habitatzero.data.HistoricoItem
-import com.workwell.habitatzero.model.Estufa
 import com.workwell.habitatzero.model.PlantaRequest
 import com.workwell.habitatzero.viewmodel.EstufaDetailViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -172,22 +166,15 @@ class EstufaDetailActivity : AppCompatActivity() {
     }
 
     private fun setupControleCard() {
-        val db = AppDatabase.getDatabase(this)
-        val climaDao = db.climaConfigDao()
-        val historicoDao = db.historicoDao()
+        val prefs = getSharedPreferences(PREFS_CONTROLE, Context.MODE_PRIVATE)
+        val key_vent = "vent_$estufaId"
+        val key_irrig = "irrig_$estufaId"
 
-        // Load last saved state
-        lifecycleScope.launch(Dispatchers.IO) {
-            val last = climaDao.getHistorico().firstOrNull()
-            last?.let {
-                runOnUiThread {
-                    switchVentilacao.isChecked = it.ventilacao
-                    switchIrrigacao.isChecked = it.irrigacao
-                }
-            }
-        }
+        // Restore last saved state
+        switchVentilacao.isChecked = prefs.getBoolean(key_vent, false)
+        switchIrrigacao.isChecked  = prefs.getBoolean(key_irrig, false)
 
-        fun handleSwitch(switch: SwitchMaterial, pb: ProgressBar, nome: String) {
+        fun handleSwitch(switch: SwitchMaterial, pb: ProgressBar, nome: String, prefsKey: String) {
             switch.setOnCheckedChangeListener { _, isChecked ->
                 switch.isEnabled = false
                 pb.visibility = View.VISIBLE
@@ -196,40 +183,36 @@ class EstufaDetailActivity : AppCompatActivity() {
                     switch.isEnabled = true
                     val status = if (isChecked) "ativada" else "desativada"
                     Snackbar.make(window.decorView, "$nome $status ✓", Snackbar.LENGTH_SHORT).show()
+                    prefs.edit().putBoolean(prefsKey, isChecked).apply()
                     val now = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        climaDao.insert(ClimaConfig(
-                            temperatura = 22,
-                            umidade = 60,
-                            ventilacao = if (nome.contains("Ventilação")) isChecked else switchVentilacao.isChecked,
-                            irrigacao  = if (nome.contains("Irrigação"))  isChecked else switchIrrigacao.isChecked
-                        ))
-                        historicoDao.insert(HistoricoItem(
-                            descricao = "$nome $status — $estufaNome",
-                            data = now
-                        ))
-                    }
+                    appendHistorico("$nome $status — $estufaNome — $now")
                 }, 1500)
             }
         }
 
-        handleSwitch(switchVentilacao, pbVentilacao, "Ventilação")
-        handleSwitch(switchIrrigacao,  pbIrrigacao,  "Irrigação")
+        handleSwitch(switchVentilacao, pbVentilacao, "Ventilação", key_vent)
+        handleSwitch(switchIrrigacao,  pbIrrigacao,  "Irrigação",  key_irrig)
 
         btnAjustarThresholds.setOnClickListener {
-            val intent = Intent(this, ControleClimaticoActivity::class.java).apply {
-                putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_ID,           estufaId)
-                putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_NOME,         estufaNome)
-                putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_LOCALIZACAO,  estufaLocalizacao)
-                putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_CAPACIDADE,   estufaCapacidade)
-                putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_STATUS,       estufaStatus)
-                putExtra(ControleClimaticoActivity.EXTRA_THRESHOLD_O2,        thresholdO2)
-                putExtra(ControleClimaticoActivity.EXTRA_THRESHOLD_UMIDADE,   thresholdUmidade)
-                putExtra(ControleClimaticoActivity.EXTRA_THRESHOLD_RADIACAO,  thresholdRadiacao)
+            startActivity(Intent(this, ControleClimaticoActivity::class.java).apply {
+                putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_ID,             estufaId)
+                putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_NOME,           estufaNome)
+                putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_LOCALIZACAO,    estufaLocalizacao)
+                putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_CAPACIDADE,     estufaCapacidade)
+                putExtra(ControleClimaticoActivity.EXTRA_ESTUFA_STATUS,         estufaStatus)
+                putExtra(ControleClimaticoActivity.EXTRA_THRESHOLD_O2,          thresholdO2)
+                putExtra(ControleClimaticoActivity.EXTRA_THRESHOLD_UMIDADE,     thresholdUmidade)
+                putExtra(ControleClimaticoActivity.EXTRA_THRESHOLD_RADIACAO,    thresholdRadiacao)
                 putExtra(ControleClimaticoActivity.EXTRA_THRESHOLD_TEMPERATURA, thresholdTemperatura)
-            }
-            startActivity(intent)
+            })
         }
+    }
+
+    private fun appendHistorico(entry: String) {
+        val prefs = getSharedPreferences(PREFS_HISTORICO, Context.MODE_PRIVATE)
+        val existing = prefs.getString(KEY_HISTORICO, "") ?: ""
+        val updated = if (existing.isBlank()) entry else "$entry\n$existing"
+        prefs.edit().putString(KEY_HISTORICO, updated).apply()
     }
 
     private fun setupPlantasCard() {
@@ -361,5 +344,8 @@ class EstufaDetailActivity : AppCompatActivity() {
         const val EXTRA_THRESHOLD_UMIDADE   = "threshold_umidade"
         const val EXTRA_THRESHOLD_RADIACAO  = "threshold_radiacao"
         const val EXTRA_THRESHOLD_TEMPERATURA = "threshold_temperatura"
+        const val PREFS_CONTROLE  = "HabitatZeroControle"
+        const val PREFS_HISTORICO = "HabitatZeroHistorico"
+        const val KEY_HISTORICO   = "historico_entries"
     }
 }

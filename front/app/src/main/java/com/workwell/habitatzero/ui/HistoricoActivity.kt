@@ -1,44 +1,35 @@
 package com.workwell.habitatzero.ui
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.workwell.habitatzero.R
 import com.workwell.habitatzero.adapter.HistoricoAdapter
-import com.workwell.habitatzero.data.AppDatabase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.workwell.habitatzero.data.HistoricoItem
 
 class HistoricoActivity : AppCompatActivity() {
-
-    private lateinit var recyclerHistorico: RecyclerView
-    private lateinit var adapter: HistoricoAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_historico)
 
-        recyclerHistorico = findViewById(R.id.recyclerHistorico)
+        val recyclerHistorico = findViewById<RecyclerView>(R.id.recyclerHistorico)
         recyclerHistorico.layoutManager = LinearLayoutManager(this)
 
-        // Inicializa o banco de dados Room
-        val db = AppDatabase.getDatabase(this)
-        val historicoDao = db.historicoDao()
-
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                // Carregar lista do banco
-                val listaHistorico = historicoDao.getAll()
-                
-                withContext(Dispatchers.Main) {
-                    // Configurar adapter com os dados do Room
-                    adapter = HistoricoAdapter(listaHistorico)
-                    recyclerHistorico.adapter = adapter
-                }
-            }
+        val prefs = getSharedPreferences(EstufaDetailActivity.PREFS_HISTORICO, Context.MODE_PRIVATE)
+        val raw = prefs.getString(EstufaDetailActivity.KEY_HISTORICO, "") ?: ""
+        val items = if (raw.isBlank()) emptyList()
+        else raw.split("\n").filter { it.isNotBlank() }.mapIndexed { idx, line ->
+            val parts = line.split(" — ")
+            HistoricoItem(
+                id = idx,
+                descricao = parts.getOrElse(0) { line } + if (parts.size > 1) " — ${parts[1]}" else "",
+                data = parts.getOrElse(2) { "" }
+            )
         }
+
+        recyclerHistorico.adapter = HistoricoAdapter(items)
     }
 }

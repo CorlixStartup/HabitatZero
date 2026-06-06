@@ -7,17 +7,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.slider.Slider
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.workwell.habitatzero.R
-import com.workwell.habitatzero.data.AppDatabase
-import com.workwell.habitatzero.data.ClimaConfig
 import com.workwell.habitatzero.model.EstufaRequest
-import com.workwell.habitatzero.repository.HabitatZeroRepository
 import com.workwell.habitatzero.viewmodel.ControleClimaticoViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class ControleClimaticoActivity : AppCompatActivity() {
 
@@ -107,18 +101,6 @@ class ControleClimaticoActivity : AppCompatActivity() {
         btnSalvar.setOnClickListener {
             val novaTemperatura = sliderTemperatura.value.toDouble()
             val novaUmidade = sliderUmidade.value.toDouble()
-            val ventilacao = switchVentilacao.isChecked
-            val irrigacao = switchIrrigacao.isChecked
-
-            lifecycleScope.launch(Dispatchers.IO) {
-                val config = ClimaConfig(
-                    temperatura = novaTemperatura.toInt(),
-                    umidade = novaUmidade.toInt(),
-                    ventilacao = ventilacao,
-                    irrigacao = irrigacao
-                )
-                climaConfigDao.insert(config)
-            }
 
             val request = EstufaRequest(
                 nome = estufaNome,
