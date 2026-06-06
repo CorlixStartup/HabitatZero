@@ -49,7 +49,7 @@ Em uma colônia espacial, falhas nos sistemas de suporte de vida podem ser letai
 ```
 habitatzero/
 ├── backend/      # API Spring Boot (Java 21)
-├── frontend/     # Aplicativo Android (Kotlin)
+├── frontend/        # Aplicativo Android (Kotlin)
 ├── IoT/          # Firmware ESP32 + simulador Python
 ├── db/           # Scripts SQL (DDL + DML)
 └── README.md     # Este arquivo
@@ -364,13 +364,13 @@ public class SensorLeituraRequest {
 
 ---
 
-## 🧪 Módulo 4 — Testes (JUnit 5 + Mockito)
+## 🧪 Módulo 4 — Testes (JUnit 5 + Mockito + JVM)
 
-### Casos de Teste
+### Casos de Teste — Backend
 
 A documentação completa está em [`backend/src/test/TEST_CASES.md`](backend/src/test/TEST_CASES.md).
 
-**Testes unitários (JUnit 5 + Mockito) — sem banco de dados:**
+**Testes unitários backend (JUnit 5 + Mockito) — sem banco de dados:**
 
 | ID | Cenário | Status |
 |---|---|---|
@@ -392,11 +392,28 @@ A documentação completa está em [`backend/src/test/TEST_CASES.md`](backend/sr
 | IT-03 | `POST /sensores/leitura` sem `estufaId` → HTTP 400 | ✅ PASS |
 | IT-04 | Leitura persistida — resposta contém `id` e `estufaId` | ✅ PASS |
 
+### Casos de Teste — Frontend Android
+
+A documentação completa está em [`frontend/TEST_CASES.md`](frontend/TEST_CASES.md).
+
+**Testes unitários frontend (JVM puro) — sem emulador ou banco de dados:**
+
+| ID | Cenário | Status |
+|---|---|---|
+| TC-FE-01 | Conversão de leituras IoT com todos os tipos → `SensorAmbiente` correto | ✅ PASS |
+| TC-FE-02 | Leituras duplicadas do mesmo sensor → usa a mais recente | ✅ PASS |
+| TC-FE-03 | Lista de leituras vazia → `SensorAmbiente` com zeros, sem crash | ✅ PASS |
+| TC-FE-04 | Avanço de fase de planta → sequência correta, `null` após COLHEITA | ✅ PASS |
+| TC-FE-05 | Buffer de histórico do Dashboard → descarta mais antiga ao atingir 20 | ✅ PASS |
+
 ### Executar os Testes
 
 ```bash
-# Testes unitários (sem banco)
-cd backend && mvn test
+# Testes unitários backend (sem banco)
+cd backend && ./mvnw test
+
+# Testes unitários frontend (JVM, sem emulador)
+cd frontend && ./gradlew :app:test
 
 # Testes de integração IoT (requer backend + MySQL em execução)
 cd IoT && pip install pytest requests && pytest test_integration.py -v
@@ -412,58 +429,79 @@ cd IoT && pip install pytest requests && pytest test_integration.py -v
 |---|---|---|
 | Kotlin | — | Linguagem principal |
 | Android SDK | API 26–37 | Plataforma mobile |
+| AGP | 9.2.1 | Android Gradle Plugin |
 | Retrofit 2 | 2.9.0 | Cliente HTTP para a API REST |
 | OkHttp | 4.9.3 | Interceptor de logging e JWT |
 | Coroutines | 1.7.3 | Requisições assíncronas |
 | ViewModel + LiveData | 2.6.2 | Arquitetura MVVM |
-| Room | 2.6.1 | Persistência local (histórico e configurações) |
+| Fragment KTX | 1.6.2 | Single-Activity com Fragments |
+| SharedPreferences | — | Persistência local (switches, histórico, token) |
 | MPAndroidChart | v3.1.0 | Gráficos de linha para sensores |
 | Firebase Messaging | 23.0.0 | Push notifications |
-| Material Design 3 | — | UI Components |
+| Material Design 3 | — | UI Components (dark theme) |
 | Lottie | 6.0.0 | Animações |
 
 ### Arquitetura
 
-O aplicativo segue o padrão **MVVM** com Repository:
+O aplicativo segue o padrão **Single-Activity MVVM** com Fragments:
 
 ```
-Activity (UI Layer)
-    └── observa LiveData
-ViewModel (Business Logic)
-    └── chama Repository
-Repository (Data Layer)
-    ├── RetrofitClient → API Spring Boot
-    └── Room Database  → SQLite local
+MainActivity (host único com BottomNavigationView)
+    └── FragmentContainerView
+         ├── DashboardFragment  → DashboardViewModel  → Repository → API
+         ├── EstufasFragment    → EstufasViewModel    → Repository → API
+         └── AlertasFragment    → AlertasViewModel    → Repository → API
+
+Telas de detalhe (Activities separadas, abertas por Intent):
+    EstufaDetailActivity  → EstufaDetailViewModel → Repository → API
+    ControleClimaticoActivity → ControleClimaticoViewModel → Repository → API
+    HistoricoActivity     → SharedPreferences (local)
 ```
 
 ### Telas do Aplicativo
 
-| Tela | Arquivo | Descrição | Endpoints usados |
+| Tela | Tipo | Descrição | Endpoints usados |
 |---|---|---|---|
-| **Login** | `LoginActivity` | Autenticação com email/senha, JWT armazenado em SharedPreferences | `POST /auth/login` |
-| **Dashboard** | `DashboardActivity` | Gráficos em tempo real dos sensores, polling a cada 5 segundos | `GET /sensores/leituras`, `GET /estufas` |
-| **Estufas** | `EstufasActivity` | Lista de todas as estufas com status, total de plantas e alertas ativos | `GET /estufas` |
-| **Controle Climático** | `ControleClimaticoActivity` | Ajuste dos thresholds de temperatura e umidade de uma estufa selecionada | `PUT /estufas/{id}` |
-| **Alertas** | `AlertasActivity` | Lista de alertas ativos com código de cores por severidade (ATENCAO/CRITICO/EMERGENCIA) | `GET /alertas` |
-| **Histórico** | `HistoricoActivity` | Histórico local das configurações climáticas aplicadas | Room DB |
+| **Login** | Activity | Autenticação com email/senha; token JWT salvo em SharedPreferences; sessão persiste entre aberturas do app | `POST /auth/login` |
+| **Dashboard** | Fragment | Gráficos em tempo real dos 4 sensores, polling a cada 5s, histórico das últimas 20 leituras | `GET /sensores/leituras` |
+| **Estufas** | Fragment | Lista de estufas com status colorido, total de plantas e alertas ativos | `GET /estufas` |
+| **Alertas** | Fragment | Alertas ativos globais com código de cores por severidade, botão "✓ Resolver" por item | `GET /alertas`, `PATCH /alertas/{id}/resolver` |
+| **Detalhe da Estufa** | Activity | Central de administração da estufa: info, painel de sistemas da colônia (simulado), controles de ventilação/irrigação, gerenciamento de plantas, alertas da estufa | `GET /plantas`, `POST /plantas`, `PUT /plantas/{id}`, `GET /alertas/estufa/{id}`, `PATCH /alertas/{id}/resolver` |
+| **Controle Climático** | Activity | Ajuste dos thresholds de temperatura e umidade via sliders | `PUT /estufas/{id}` |
+| **Histórico** | Activity | Registro local dos comandos de ventilação/irrigação executados | SharedPreferences |
 
 ### Navegação
 
 ```
-LoginActivity
-    └── [intent] ──► MainActivity (Bottom Navigation)
-                         ├── [nav_dashboard]  ──► DashboardActivity
-                         ├── [nav_estufas]    ──► EstufasActivity
-                         │                            └── [item click] ──► ControleClimaticoActivity
-                         ├── [nav_alertas]    ──► AlertasActivity
-                         └── [nav_controle]   ──► ControleClimaticoActivity
+LoginActivity (splash + auto-login se token salvo)
+    └── MainActivity (Single-Activity host)
+         ├── [tab Dashboard]  ── DashboardFragment    (polling 5s)
+         ├── [tab Estufas]    ── EstufasFragment
+         │                          └── [tap estufa] ── EstufaDetailActivity
+         │                                                  └── [btn thresholds] ── ControleClimaticoActivity
+         │                                                  └── [btn histórico]  ── HistoricoActivity
+         └── [tab Alertas]    ── AlertasFragment
 ```
+
+### Funcionalidades de Administração
+
+**Reais (chamadas à API):**
+- Resolver alertas diretamente do app com animação de remoção
+- Listar plantas por estufa com chip de fase colorido
+- Avançar fase de crescimento de uma planta (SEMENTE → … → COLHEITA)
+- Adicionar nova planta via dialog com formulário
+- Ajustar thresholds de alerta da estufa
+
+**Simuladas (feedback local):**
+- Painel de Sistemas da Colônia: pressurização, energia solar, link orbital e filtro CO₂ com valores animados a cada 3s
+- Ventilação forçada e irrigação automática: toggle com spinner de 1.5s simulando acionamento, confirmação via Snackbar, estado persistido por estufa
 
 ### Autenticação JWT
 
-- O token é salvo em `SharedPreferences` com chave `token` após login bem-sucedido
-- O `JWTInterceptor` injeta automaticamente o header `Authorization: Bearer <token>` em todas as requisições
-- O `AuthInterceptor` captura respostas HTTP 401, limpa o token e redireciona para `LoginActivity`
+- Token salvo em `SharedPreferences` (`HabitatZeroPrefs` → `token`) após login
+- `LoginActivity` verifica o token no `onCreate` — se existir, pula direto para `MainActivity`
+- `JWTInterceptor` injeta `Authorization: Bearer <token>` em todas as requisições autenticadas
+- `AuthInterceptor` captura HTTP 401, limpa o token e redireciona para login (executado no main thread via `Handler`)
 
 ### Configuração do Emulador vs Dispositivo Físico
 
@@ -477,10 +515,11 @@ private const val BASE_URL = "http://10.0.2.2:8080/"
 private const val BASE_URL = "http://192.168.X.X:8080/"
 ```
 
-### Dependências (build.gradle.kts)
+### Dependências principais (build.gradle.kts)
 
 ```kotlin
 dependencies {
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -492,9 +531,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
 
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("com.airbnb.android:lottie:6.0.0")
@@ -762,6 +798,9 @@ pytest test_integration.py -v
 # Testes unitários do backend (sem banco de dados)
 cd backend && ./mvnw test
 
+# Testes unitários do frontend (JVM, sem emulador)
+cd frontend && ./gradlew :app:test
+
 # Testes de integração IoT (requer backend + MySQL em execução)
 cd IoT && pip install pytest requests && pytest test_integration.py -v
 ```
@@ -784,7 +823,7 @@ cd IoT && pip install pytest requests && pytest test_integration.py -v
 ```
 habitatzero-entrega.zip
 ├── backend/                  # Código-fonte Spring Boot completo
-├── frontend/                 # Projeto Android Studio completo (Kotlin)
+├── frontend/                    # Projeto Android Studio completo (Kotlin)
 ├── IoT/                      # Firmware ESP32 + simulador Python
 ├── db/                       # script_habitat_zero.sql + consultas
 ├── README.md                 # Este arquivo
@@ -799,15 +838,18 @@ habitatzero-entrega.zip
 - [x] Diagrama ER com 4 entidades e relacionamentos
 - [x] Script SQL com `CREATE TABLE`, PKs, FKs e inserts
 - [x] Consultas SQL de simulação de uso espacial
-- [x] API Spring Boot com 10+ endpoints (GET, POST, PUT, DELETE)
+- [x] API Spring Boot com 19+ endpoints (GET, POST, PUT, PATCH, DELETE)
 - [x] Arquitetura em camadas: Controller → Service → Repository
 - [x] Documentação Swagger em `/swagger-ui.html`
-- [x] Plano com 5 casos de teste (cenário, entrada, saída esperada, status)
-- [x] Execução de 3+ testes com evidências (logs/prints)
-- [x] App Android com 3 telas (Login, Painel, Ajustes de Clima)
+- [x] Seed automático de dados no startup (DataSeeder) — 2 estufas, 2 colonos, 3 plantas
+- [x] 13 casos de teste documentados (TC-01 a TC-08 backend, TC-FE-01 a TC-FE-05 frontend, IT-01 a IT-04 IoT)
+- [x] App Android com 7 telas (Login, Dashboard, Estufas, Detalhe da Estufa, Controle Climático, Alertas, Histórico)
+- [x] Arquitetura Single-Activity com Fragments e navegação por Bottom Navigation
+- [x] Login com sessão persistida (token JWT em SharedPreferences)
 - [x] Login com senha BCrypt
 - [x] 2+ práticas de segurança (BCrypt + Bean Validation + proteção SQLi/XSS)
 - [x] Simulação IoT com 4 sensores (O₂, Umidade, Radiação, Temperatura)
+- [x] Conteinerização Docker (MySQL + Spring Boot + simulador IoT via `docker compose up`)
 - [x] `README.md` com instruções de execução
 - [x] `documento.pdf` com artefatos não-código
 - [x] `.zip` com todo o código-fonte
