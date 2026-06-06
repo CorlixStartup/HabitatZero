@@ -87,9 +87,6 @@ class ControleClimaticoActivity : AppCompatActivity() {
         sliderUmidade.stepSize = 1f
         sliderUmidade.value = thresholdUmidade.toFloat().coerceIn(10f, 100f)
 
-        val db = AppDatabase.getDatabase(this)
-        val climaConfigDao = db.climaConfigDao()
-
         sliderTemperatura.addOnChangeListener { _, value, _ ->
             txtTempAtual.text = getString(R.string.label_temperatura_slider, value.toInt())
         }
