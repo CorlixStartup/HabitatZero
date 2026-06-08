@@ -76,9 +76,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="✓ Resolver"
+            android:textColor="@color/bg_primary"
             android:textSize="11sp"
             android:paddingHorizontal="12dp"
-            android:paddingVertical="6dp"/>
+            android:paddingVertical="6dp"
+            app:backgroundTint="@color/accent_cyan"
+            app:strokeWidth="0dp"/>
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

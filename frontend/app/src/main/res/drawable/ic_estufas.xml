@@ -2,9 +2,11 @@
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
-    android:viewportHeight="24"
-    android:tint="@color/black">
+    android:viewportHeight="24">
+    <!-- Greenhouse shape: peaked roof + walls -->
     <path
-        android:fillColor="@android:color/white"
-        android:pathData="M3,3h18v18H3z"/>
+        android:fillColor="?attr/colorOnSurface"
+        android:pathData="M12,3L2,9h2v11h4v-6h8v6h4V9h2L12,3z
+                          M12,5.5L19,9.5H5L12,5.5z
+                          M9,14v5H5v-9h14v9h-4v-5H9z"/>
 </vector>

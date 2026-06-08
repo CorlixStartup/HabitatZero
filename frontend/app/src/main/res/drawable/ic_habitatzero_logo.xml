@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    HabitatZero Logo — converted from assets/HabitatZero Logo.svg
+    Original: 200×200 viewport, stroke-based design in #00F2FF
+    Use as: android:src="@drawable/ic_habitatzero_logo"
+    Tint is baked in (accent cyan) so it shows correctly on dark backgrounds.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Outer dashed circle -->
+    <path
+        android:pathData="M10,100 C10,149.672 50.328,190 100,190 C149.672,190 190,149.672 190,100 C190,50.328 149.672,10 100,10 C50.328,10 10,50.328 10,100"
+        android:strokeColor="#00E5CC"
+        android:strokeWidth="4"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"/>
+
+    <!-- M-shaped mark (main letter form) -->
+    <path
+        android:pathData="M60,140 L60,60 L100,100 L140,60 L140,140"
+        android:strokeColor="#00E5CC"
+        android:strokeWidth="8"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+
+    <!-- Vertical stem from center down -->
+    <path
+        android:pathData="M100,100 L100,150"
+        android:strokeColor="#00E5CC"
+        android:strokeWidth="8"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"/>
+
+    <!-- Base rectangle -->
+    <path
+        android:pathData="M87,150 L113,150 C114.104,150 115,150.896 115,152 L115,158 C115,159.104 114.104,160 113,160 L87,160 C85.896,160 85,159.104 85,158 L85,152 C85,150.896 85.896,150 87,150 Z"
+        android:fillColor="#00E5CC"/>
+
+    <!-- Center filled circle (semi-transparent) -->
+    <path
+        android:pathData="M85,100 C85,108.279 91.721,115 100,115 C108.279,115 115,108.279 115,100 C115,91.721 108.279,85 100,85 C91.721,85 85,91.721 85,100 Z"
+        android:fillColor="#00E5CC"
+        android:fillAlpha="0.2"/>
+
+</vector>
