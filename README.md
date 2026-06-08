@@ -86,29 +86,35 @@ habitatzero/
 ### Diagrama de Entidades
 
 ```
-┌───────────────────┐         ┌──────────────────────┐
-│      COLONO       │         │       ESTUFA          │
-├───────────────────┤  N:1    ├──────────────────────┤
-│ id (PK)           ├────────►│ id (PK)               │
-│ nome              │         │ nome                  │
-│ email (UNIQUE)    │         │ localizacao           │
-│ senha_hash        │         │ capacidade_m2         │
-│ cargo             │         │ status                │
-│ estufa_id (FK)    │         └──────────┬───────────┘
-└───────────────────┘                    │ 1
-                                         │
-              ┌──────────────────────────┴──────────────────────┐
-              │ N                                               │ N
-┌─────────────▼──────────────┐          ┌────────────────────────┐
-│          PLANTA             │          │    SENSOR_AMBIENTE     │
-├────────────────────────────┤          ├────────────────────────┤
-│ id (PK)                    │          │ id (PK)                │
-│ nome_cientifico             │          │ tipo_sensor            │
-│ fase_crescimento            │          │ valor_leitura          │
-│ data_plantio                │          │ unidade                │
-│ estufa_id (FK)             │          │ timestamp              │
-└────────────────────────────┘          │ estufa_id (FK)         │
-                                        └────────────────────────┘
+┌───────────────────┐         ┌──────────────────────────────────┐
+│      COLONO       │         │             ESTUFA               │
+├───────────────────┤  N:1    ├──────────────────────────────────┤
+│ id (PK)           ├────────►│ id (PK)                          │
+│ nome              │         │ nome                             │
+│ email (UNIQUE)    │         │ localizacao                      │
+│ senha_hash        │         │ capacidade_m2                    │
+│ cargo             │         │ status                           │
+│ estufa_id (FK)    │         │ threshold_oxigenio_min           │
+└───────────────────┘         │ threshold_umidade_min            │
+                              │ threshold_radiacao_max           │
+                              │ threshold_temperatura_max        │
+                              └──────┬────────────┬─────────────┘
+                                     │ 1          │ 1
+                   ┌─────────────────┘            └──────────────────────┐
+                   │ N                                                    │ N
+  ┌────────────────▼──────────┐   ┌──────────────────┐   ┌──────────────▼──────────┐
+  │          PLANTA           │   │  SENSOR_AMBIENTE  │   │          ALERTA         │
+  ├───────────────────────────┤   ├──────────────────┤   ├─────────────────────────┤
+  │ id (PK)                   │   │ id (PK)           │   │ id (PK)                 │
+  │ nome_cientifico           │   │ tipo_sensor       │   │ severidade              │
+  │ nome_comum                │   │ valor_leitura     │   │ mensagem                │
+  │ fase_crescimento          │   │ unidade           │   │ tipo_sensor             │
+  │ data_plantio              │   │ timestamp         │   │ valor_registrado        │
+  │ estufa_id (FK)           │   │ estufa_id (FK)   │   │ criado_em               │
+  └───────────────────────────┘   └──────────────────┘   │ resolvido               │
+                                                          │ resolvido_em            │
+                                                          │ estufa_id (FK)         │
+                                                          └─────────────────────────┘
 ```
 
 ### Relacionamentos
@@ -118,6 +124,7 @@ habitatzero/
 | Colono → Estufa | N:1 | Um colono é responsável por uma estufa; uma estufa tem vários colonos |
 | Planta → Estufa | N:1 | Uma estufa abriga múltiplas plantas |
 | Sensor_Ambiente → Estufa | N:1 | Uma estufa possui múltiplos sensores e leituras |
+| Alerta → Estufa | N:1 | Uma estufa pode ter múltiplos alertas gerados automaticamente |
 
 ### Script DDL Principal
 
@@ -170,7 +177,7 @@ WHERE p.fase_crescimento = 'COLHEITA'
 | Spring Boot | 4.x | Framework web |
 | Spring Data JPA | 3.x | ORM / persistência |
 | Spring Security | 6.x | Autenticação e autorização |
-| MySQL Connector | 9.6 | Driver JDBC |
+| MySQL Connector | 8.x | Driver JDBC |
 | Springdoc OpenAPI | 2.x | Documentação Swagger |
 | Lombok | latest | Redução de boilerplate |
 | Bean Validation | 3.x | Validação de inputs |
