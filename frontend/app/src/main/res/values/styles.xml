@@ -60,20 +60,21 @@
         <item name="startIconTint">@color/accent_cyan_dim</item>
     </style>
 
-    <!-- ── Section Header: Critical ─────────────────────────────── -->
-    <style name="Widget.HabitatZero.SectionHeader.Critical">
-        <item name="android:textColor">@color/alert_critical</item>
+    <!-- ── Section Header: base ─────────────────────────────────── -->
+    <style name="Widget.HabitatZero.SectionHeader">
         <item name="android:textSize">@dimen/text_xl</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
+    <!-- ── Section Header: Critical ─────────────────────────────── -->
+    <style name="Widget.HabitatZero.SectionHeader.Critical">
+        <item name="android:textColor">@color/alert_critical</item>
+    </style>
+
     <!-- ── Section Header: Warning ──────────────────────────────── -->
     <style name="Widget.HabitatZero.SectionHeader.Warning">
         <item name="android:textColor">@color/alert_warning</item>
-        <item name="android:textSize">@dimen/text_xl</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <!-- ── Backward compat aliases kept to avoid regressions ────── -->
