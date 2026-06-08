@@ -57,4 +57,5 @@
         android:paddingTop="12dp"
         android:paddingBottom="@dimen/bottom_nav_height"
         android:clipToPadding="false"/>
+
 </LinearLayout>
