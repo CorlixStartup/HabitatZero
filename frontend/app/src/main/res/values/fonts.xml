@@ -1,24 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!--
-        Font families for HabitatZero design system.
+<!--
+    Font families are defined in res/font/ as XML font-family files:
+      res/font/space_grotesk.xml    — Space Grotesk (Regular, Medium, SemiBold, Bold)
+      res/font/jetbrains_mono.xml   — JetBrains Mono (Regular, Italic, Medium, Bold)
 
-        IMPORTANT: Place the following .ttf files in app/src/main/res/font/
-        before building:
-          • space_grotesk_bold.ttf       (Space Grotesk Bold)
-          • space_grotesk_medium.ttf     (Space Grotesk Medium)
-          • space_grotesk_semibold.ttf   (Space Grotesk SemiBold)
-          • jetbrains_mono_regular.ttf   (JetBrains Mono Regular)
+    Usage in layouts:
+      android:fontFamily="@font/space_grotesk"
+      android:fontFamily="@font/jetbrains_mono"
 
-        Download from:
-          Space Grotesk  — https://fonts.google.com/specimen/Space+Grotesk
-          JetBrains Mono — https://www.jetbrains.com/lp/mono/
-
-        Until the files are placed, the app falls back to sans-serif / monospace.
-    -->
-
-    <font-family xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
-        <!-- Space Grotesk -->
-    </font-family>
-</resources>
+    The .ttf source files are in res/font/ with lowercase underscore names
+    (e.g. space_grotesk_bold.ttf, jetbrains_mono_regular.ttf).
+-->
+<resources/>
