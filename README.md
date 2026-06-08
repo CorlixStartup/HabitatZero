@@ -506,36 +506,6 @@ LoginActivity (splash + auto-login se token salvo)
 - `JWTInterceptor` injeta `Authorization: Bearer <token>` em todas as requisições autenticadas
 - `AuthInterceptor` captura HTTP 401, limpa o token e redireciona para login (executado no main thread via `Handler`)
 
-### Design System
-
-O app usa um design system próprio com tema escuro estilo sci-fi, definido inteiramente via recursos Android (sem valores hardcoded no código):
-
-**Paleta principal** (`res/values/colors.xml`):
-
-| Token | Cor | Uso |
-|---|---|---|
-| `bg_primary` | `#0A0E14` | Fundo de todas as telas |
-| `bg_surface` | `#111922` | Cards e superfícies |
-| `bg_card_dark` | `#0D1520` | Cards de métricas |
-| `accent_cyan` | `#00E5CC` | Cor de marca — destaques, bordas, ícones ativos |
-| `alert_critical` | `#E53935` | Alertas críticos e botão de logout |
-| `alert_warning` | `#F9A825` | Avisos de manutenção |
-| `alert_success` | `#00C853` | Estado resolvido / OK |
-| `text_primary` | `#FFFFFF` | Texto principal |
-| `text_secondary` | `#8A9BB0` | Labels, subtítulos |
-| `nav_active` | `#00E5CC` | Tab ativo no Bottom Nav |
-
-**Tipografia** (`res/values/dimens.xml`): escala de `text_xs` (10sp) a `text_3xl` (48sp), com fontes `sans-serif-medium` para títulos e `monospace` para IDs e códigos de sistema.
-
-**Estilos reutilizáveis** (`res/values/styles.xml`):
-- `Widget.HabitatZero.Button.Primary` — botão cyan, texto escuro
-- `Widget.HabitatZero.Button.Destructive` — botão transparente com borda vermelha (logout)
-- `Widget.HabitatZero.Button.OutlinedCyan` — botão contornado em cyan
-- `Widget.HabitatZero.Card` / `.Card.Dark` — cards com `cornerRadius=12dp` e borda sutil
-- `Widget.HabitatZero.TextInputLayout` — campos de input com fundo escuro e borda sutil
-
-> **Fontes customizadas:** Para ativar Space Grotesk e JetBrains Mono, coloque os arquivos `.ttf` em `frontend/app/src/main/res/font/` — instruções detalhadas em `res/values/fonts.xml`.
-
 ### Configuração do Emulador vs Dispositivo Físico
 
 **Arquivo:** `frontend/app/src/main/java/com/workwell/habitatzero/api/RetrofitClient.kt`
@@ -842,12 +812,39 @@ cd IoT && pip install pytest requests && pytest test_integration.py -v
 
 ## 👥 Equipe
 
-| Membro | RM | Responsabilidade |
-|---|---|---|
-| Nome do Dev 1 | RM000001 | Backend — Banco de Dados & Persistência |
-| Nome do Dev 2 | RM000002 | Backend — API, Segurança & Integração IoT |
-| Nome do Dev 3 | RM000003 | Front-end Mobile Android |
-| Nome do Dev 4 | RM000004 | IoT (ESP32) & QA / Testes |
+<table>
+  <tr>
+    <th>Nome</th>
+    <th>RM</th>
+    <th>Turma</th>
+  </tr>
+  <tr>
+    <td>Gabriel Genaro Dalaqua</td>
+    <td>551986</td>
+    <td>4ESOA</td>
+  </tr>
+  <tr>
+    <td>Alairton Rocha Scabelli </td>
+    <td>551454</td>
+    <td>4ESOA</td>
+  </tr>
+  <tr>
+    <td>Carolina Nascimento Amorim</td>
+    <td>97930</td>
+    <td>4ESOA</td>
+  </tr>
+  <tr>
+    <td>Eduardo Marins</td>
+    <td>551892</td>
+    <td>4ESOA</td>
+  </tr>
+  <tr>
+    <td>Sarah Ribeiro da Silva</td>
+    <td>97747</td>
+    <td>4ESOA</td>
+  </tr>
+</table>
+
 
 ---
 
@@ -866,48 +863,8 @@ habitatzero-entrega.zip
 
 ---
 
-## 📋 Checklist de Entregáveis
-
-- [x] Diagrama ER com 4 entidades e relacionamentos
-- [x] Script SQL com `CREATE TABLE`, PKs, FKs e inserts
-- [x] Consultas SQL de simulação de uso espacial (`db/queries_habitat_zero.sql`)
-- [x] API Spring Boot com 19+ endpoints (GET, POST, PUT, PATCH, DELETE)
-- [x] Arquitetura em camadas: Controller → Service → Repository
-- [x] Documentação Swagger em `/swagger-ui.html`
-- [x] Seed automático de dados no startup (DataSeeder) — 2 estufas, 2 colonos, 3 plantas
-- [x] 13 casos de teste documentados (TC-01 a TC-08 backend, TC-FE-01 a TC-FE-05 frontend, IT-01 a IT-04 IoT)
-- [x] App Android com 8 telas (Login, Dashboard, Estufas, Detalhe da Estufa, Controle Climático, Alertas, Histórico, **Perfil**)
-- [x] Arquitetura Single-Activity com 4 Fragments e navegação por Bottom Navigation
-- [x] Tela de Perfil com dados do colono ao vivo, métricas da missão e logout com confirmação
-- [x] Design system unificado — tema escuro sci-fi com paleta, tipografia e estilos em recursos Android
-- [x] Login com sessão persistida (token JWT + email em SharedPreferences)
-- [x] Login com senha BCrypt
-- [x] 2+ práticas de segurança (BCrypt + Bean Validation + proteção SQLi/XSS)
-- [x] Simulação IoT com 4 sensores (O₂, Umidade, Radiação, Temperatura)
-- [x] Conteinerização Docker (MySQL + Spring Boot + simulador IoT via `docker compose up`)
-- [x] `README.md` com instruções de execução
-- [x] `documento.pdf` com artefatos não-código
-- [x] `.zip` com todo o código-fonte
-- [x] `grupo.txt` com RMs, nomes e link do Vídeo Pitch
-- [x] Vídeo Pitch de até 3 minutos (YouTube/Drive/Vimeo)
-
----
-
-## 🔗 Conexão com ODS da ONU
-
-Este projeto contribui diretamente para os Objetivos de Desenvolvimento Sustentável:
-
-- **ODS 2** — Fome Zero e Agricultura Sustentável *(produção de alimentos em ambientes extremos)*
-- **ODS 9** — Indústria, Inovação e Infraestrutura *(tecnologia espacial aplicada)*
-- **ODS 11** — Cidades e Comunidades Sustentáveis *(colonização sustentável fora da Terra)*
-- **ODS 13** — Ação Contra a Mudança do Clima *(monitoramento ambiental com dados orbitais)*
-
----
-
 <div align="center">
 
 **FIAP — Engenharia de Software — 4º Ano — Global Solution 2026/1**
-
-*"Quando ideias ganham propósito, elas têm o poder de transformar realidades."*
 
 </div>
