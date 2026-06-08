@@ -782,16 +782,7 @@ pytest test_integration.py -v
 
 5. O emulador precisa ser **API 26+** (Android 8.0 Oreo). Para criar um AVD: `Tools > Device Manager > Create Virtual Device`
 
-**Credencial de teste:** Crie um colono via `POST /colonos` pelo Swagger antes de fazer login no app:
-
-```json
-{
-  "nome": "Comandante Silva",
-  "email": "silva@habitatzero.br",
-  "senha": "Senha@123",
-  "cargo": "COMANDANTE"
-}
-```
+> Os usuários de teste são criados automaticamente pelo **DataSeeder** na primeira inicialização do backend — não é necessário nenhum cadastro manual.
 
 ---
 
@@ -807,6 +798,51 @@ cd frontend && ./gradlew :app:test
 # Testes de integração IoT (requer backend + MySQL em execução)
 cd IoT && pip install pytest requests && pytest test_integration.py -v
 ```
+
+---
+
+## 🔑 Logins para Teste
+
+O backend cria automaticamente dois usuários e dois dados de estufa na **primeira inicialização** (via `DataSeeder`). Use as credenciais abaixo para fazer login no app Android ou testar os endpoints via Swagger.
+
+### Usuários pré-cadastrados
+
+| Nome | E-mail | Senha | Cargo | Estufa atribuída |
+|---|---|---|---|---|
+| Comandante Silva | `silva@habitatzero.br` | `Senha@123` | COMANDANTE | Estufa Alpha |
+| Engenheira Lima | `lima@habitatzero.br` | `Senha@123` | ENGENHEIRO | Estufa Beta |
+
+### Dados de seed criados automaticamente
+
+**Estufas:**
+
+| Nome | Localização | Capacidade | Status |
+|---|---|---|---|
+| Estufa Alpha | Setor A — Nível 1 | 120 m² | ATIVA |
+| Estufa Beta | Setor B — Nível 2 | 80 m² | ATIVA |
+
+**Plantas (Estufa Alpha):**
+- *Solanum lycopersicum* (Tomate) — fase CRESCIMENTO
+- *Lactuca sativa* (Alface) — fase MATURAÇÃO
+
+**Plantas (Estufa Beta):**
+- *Capsicum annuum* (Pimentão) — fase GERMINAÇÃO
+
+### Testando via Swagger
+
+Com o backend rodando, acesse `http://localhost:8080/swagger-ui.html`, autentique com:
+
+```json
+POST /auth/login
+{
+  "email": "silva@habitatzero.br",
+  "senha": "Senha@123"
+}
+```
+
+Copie o `token` retornado, clique em **Authorize** no Swagger e cole `Bearer <token>`.
+
+> **Nota:** O seed só é executado quando o banco está vazio. Para resetar os dados, pare os containers e execute `docker compose down -v` antes de subir novamente.
 
 ---
 
