@@ -479,14 +479,20 @@
             <!-- ── Logout button ──────────────────────────────────── -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogout"
-                style="@style/Widget.HabitatZero.Button.Destructive"
+                style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_height"
                 android:text="@string/profile_logout_btn"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:letterSpacing="0.05"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
+                app:backgroundTint="#8B1A1A"
+                app:cornerRadius="8dp"
+                app:strokeWidth="0dp"
                 app:icon="@drawable/ic_logout"
-                app:iconTint="@color/alert_critical"
+                app:iconTint="#FFFFFF"
                 app:iconGravity="start"/>
 
         </LinearLayout>
