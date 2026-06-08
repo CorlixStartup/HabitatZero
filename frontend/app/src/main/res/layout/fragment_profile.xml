@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_primary">
+
+    <!-- ── Top App Bar ────────────────────────────────────────────── -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_primary"
+        app:elevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_rocket"
+                android:tint="@color/text_primary"
+                android:contentDescription="@string/profile_base_icon_desc"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/profile_base_name"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_md"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"/>
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_battery"
+                android:tint="@color/text_primary"
+                android:contentDescription="@string/profile_signal_desc"/>
+        </LinearLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+              android:background="@color/border_subtle"/>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- ── Scrollable content ─────────────────────────────────────── -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:paddingBottom="@dimen/bottom_nav_height"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- ── Profile Header Card ──────────────────────────── -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                style="@style/Widget.HabitatZero.Card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <!-- Avatar row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <!-- Avatar: initials bitmap set by ProfileFragment -->
+                        <FrameLayout
+                            android:layout_width="@dimen/avatar_size"
+                            android:layout_height="@dimen/avatar_size"
+                            android:layout_marginEnd="16dp">
+
+                            <!-- Glow ring behind avatar -->
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_avatar_ring"
+                                android:contentDescription="@null"/>
+
+                            <ImageView
+                                android:id="@+id/imgAvatar"
+                                android:layout_width="72dp"
+                                android:layout_height="72dp"
+                                android:layout_gravity="center"
+                                android:background="@color/bg_card_dark"
+                                android:contentDescription="@string/profile_avatar_desc"/>
+                        </FrameLayout>
+
+                        <!-- Name / email / credential -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvUserEmail"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/profile_email_placeholder"
+                                android:textColor="@color/text_primary"
+                                android:textSize="@dimen/text_xl"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-medium"
+                                android:maxLines="1"
+                                android:ellipsize="end"/>
+
+                            <TextView
+                                android:id="@+id/tvCredentialId"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/profile_credential_placeholder"
+                                android:textColor="@color/text_accent"
+                                android:textSize="@dimen/text_sm"
+                                android:fontFamily="monospace"
+                                android:layout_marginTop="2dp"
+                                android:layout_marginBottom="8dp"/>
+
+                            <!-- Status badge -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/profile_status_active"
+                                android:textColor="@color/accent_cyan"
+                                android:textSize="@dimen/text_xs"
+                                android:fontFamily="monospace"
+                                android:paddingHorizontal="10dp"
+                                android:paddingVertical="4dp"
+                                android:background="@drawable/bg_badge_cyan"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Sync label -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/profile_sync_label"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/text_xs"
+                        android:fontFamily="monospace"
+                        android:gravity="end"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ── Stats row ─────────────────────────────────────── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <!-- Card: Sols -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    style="@style/Widget.HabitatZero.Card.Dark">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="6dp">
+
+                            <ImageView
+                                android:layout_width="@dimen/icon_size_md"
+                                android:layout_height="@dimen/icon_size_md"
+                                android:src="@drawable/ic_moon"
+                                android:tint="@color/accent_cyan"
+                                android:contentDescription="@string/profile_sols_icon_desc"/>
+
+                            <View android:layout_width="0dp" android:layout_height="1dp"
+                                  android:layout_weight="1"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/profile_ciclos_marte_label"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="@dimen/text_xs"
+                                android:fontFamily="monospace"/>
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvSolsCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="142"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_3xl"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"
+                            android:lineSpacingMultiplier="0.85"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/profile_sols_unit"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="@dimen/text_sm"
+                            android:gravity="end"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Card: Efficiency -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    style="@style/Widget.HabitatZero.Card.Dark">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="6dp">
+
+                            <ImageView
+                                android:layout_width="@dimen/icon_size_md"
+                                android:layout_height="@dimen/icon_size_md"
+                                android:src="@drawable/ic_leaf"
+                                android:tint="@color/accent_cyan"
+                                android:contentDescription="@string/profile_efficiency_icon_desc"/>
+
+                            <View android:layout_width="0dp" android:layout_height="1dp"
+                                  android:layout_weight="1"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/profile_estufa_efi_label"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="@dimen/text_xs"
+                                android:fontFamily="monospace"/>
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvEfficiencyPct"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="98%"
+                            android:textColor="@color/accent_cyan"
+                            android:textSize="@dimen/text_3xl"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"
+                            android:lineSpacingMultiplier="0.85"/>
+
+                        <ProgressBar
+                            android:id="@+id/progressEfficiency"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/progress_bar_height"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:max="100"
+                            android:progress="98"
+                            android:progressDrawable="@drawable/bg_progress_fill"
+                            android:background="@drawable/bg_progress_track"
+                            android:layout_marginTop="8dp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- ── System Settings Card ───────────────────────────── -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                style="@style/Widget.HabitatZero.Card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="8dp">
+
+                    <!-- Section header -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:paddingBottom="12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_md"
+                            android:layout_height="@dimen/icon_size_md"
+                            android:src="@drawable/ic_settings"
+                            android:tint="@color/accent_cyan"
+                            android:layout_marginEnd="10dp"
+                            android:contentDescription="@null"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/profile_settings_title"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_lg"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"/>
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp"
+                          android:background="@color/border_subtle"/>
+
+                    <!-- Row 1: Protocolos de Segurança -->
+                    <LinearLayout
+                        android:id="@+id/rowProtocoloSeguranca"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/button_height"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView android:layout_width="@dimen/icon_size_md"
+                            android:layout_height="@dimen/icon_size_md"
+                            android:src="@drawable/ic_shield"
+                            android:tint="@color/text_secondary"
+                            android:layout_marginEnd="14dp"
+                            android:contentDescription="@null"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/profile_row_security"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_base"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="›" android:textColor="@color/text_secondary"
+                            android:textSize="@dimen/text_lg"/>
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp"
+                          android:background="@color/border_subtle"
+                          android:layout_marginHorizontal="16dp"/>
+
+                    <!-- Row 2: Notificações Biométricas (with active dot) -->
+                    <LinearLayout
+                        android:id="@+id/rowNotificacoesBiometricas"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/button_height"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView android:layout_width="@dimen/icon_size_md"
+                            android:layout_height="@dimen/icon_size_md"
+                            android:src="@drawable/ic_biometric"
+                            android:tint="@color/text_secondary"
+                            android:layout_marginEnd="14dp"
+                            android:contentDescription="@null"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/profile_row_biometric"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_base"/>
+                        <ImageView android:layout_width="@dimen/status_dot_size"
+                            android:layout_height="@dimen/status_dot_size"
+                            android:src="@drawable/ic_status_dot"
+                            android:layout_marginEnd="8dp"
+                            android:contentDescription="@string/profile_active_desc"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="›" android:textColor="@color/text_secondary"
+                            android:textSize="@dimen/text_lg"/>
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp"
+                          android:background="@color/border_subtle"
+                          android:layout_marginHorizontal="16dp"/>
+
+                    <!-- Row 3: Sincronização com Terra (with metadata) -->
+                    <LinearLayout
+                        android:id="@+id/rowSincronizacaoTerra"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/button_height"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView android:layout_width="@dimen/icon_size_md"
+                            android:layout_height="@dimen/icon_size_md"
+                            android:src="@drawable/ic_sync"
+                            android:tint="@color/text_secondary"
+                            android:layout_marginEnd="14dp"
+                            android:contentDescription="@null"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/profile_row_sync"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_base"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="@string/profile_sync_delay"
+                            android:textColor="@color/text_warning"
+                            android:textSize="@dimen/text_xs"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="8dp"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="›" android:textColor="@color/text_secondary"
+                            android:textSize="@dimen/text_lg"/>
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp"
+                          android:background="@color/border_subtle"
+                          android:layout_marginHorizontal="16dp"/>
+
+                    <!-- Row 4: Preferências de Interface -->
+                    <LinearLayout
+                        android:id="@+id/rowPreferenciasInterface"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/button_height"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView android:layout_width="@dimen/icon_size_md"
+                            android:layout_height="@dimen/icon_size_md"
+                            android:src="@drawable/ic_grid"
+                            android:tint="@color/text_secondary"
+                            android:layout_marginEnd="14dp"
+                            android:contentDescription="@null"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/profile_row_interface"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_base"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="›" android:textColor="@color/text_secondary"
+                            android:textSize="@dimen/text_lg"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ── Logout button ──────────────────────────────────── -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogout"
+                style="@style/Widget.HabitatZero.Button.Destructive"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height"
+                android:text="@string/profile_logout_btn"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                app:icon="@drawable/ic_logout"
+                app:iconTint="@color/alert_critical"
+                app:iconGravity="start"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

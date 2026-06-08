@@ -66,4 +66,34 @@
     <string name="valor_umidade">%1$.1f%%</string>
     <string name="valor_oxigenio">%1$.1f%%</string>
     <string name="valor_radiacao">%1$.2f mSv/h</string>
+
+    <!-- ── Profile screen ──────────────────────────────────────── -->
+    <string name="profile_base_name">Base Alpha — Mars</string>
+    <string name="profile_base_icon_desc">Base espacial</string>
+    <string name="profile_signal_desc">Sinal de conectividade</string>
+    <string name="profile_avatar_desc">Avatar do colono</string>
+    <string name="profile_email_placeholder">colono@habitat.br</string>
+    <string name="profile_credential_placeholder">ID: —</string>
+    <string name="profile_credential_id">ID: %1$s-MARTE</string>
+    <string name="profile_status_active">● ATIVO / SAUDÁVEL</string>
+    <string name="profile_sync_label">SYNC: REALTIME</string>
+    <string name="profile_ciclos_marte_label">CICLOS_MARTE</string>
+    <string name="profile_sols_unit">SOLS</string>
+    <string name="profile_sols_icon_desc">Ciclos em Marte</string>
+    <string name="profile_estufa_efi_label">ESTUFA_EFI</string>
+    <string name="profile_efficiency_pct">%1$d%%</string>
+    <string name="profile_efficiency_icon_desc">Eficiência das estufas</string>
+    <string name="profile_settings_title">Configurações do Sistema</string>
+    <string name="profile_row_security">Protocolos de Segurança</string>
+    <string name="profile_row_biometric">Notificações Biométricas</string>
+    <string name="profile_row_sync">Sincronização com Terra</string>
+    <string name="profile_sync_delay">Delay 14min</string>
+    <string name="profile_row_interface">Preferências de Interface</string>
+    <string name="profile_active_desc">Indicador ativo</string>
+    <string name="profile_logout_btn">ENCERRAR SESSÃO</string>
+    <string name="profile_logout_title">Encerrar sessão</string>
+    <string name="profile_logout_message">Tem certeza que deseja sair? Você precisará fazer login novamente.</string>
+    <string name="profile_logout_confirm">Sair</string>
+    <string name="profile_logout_cancel">Cancelar</string>
+    <string name="profile_settings_wip">Em desenvolvimento</string>
 </resources>

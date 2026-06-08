@@ -1,0 +1,7 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10 100C10 149.672 50.3276 190 100 190C149.672 190 190 149.672 190 100C190 50.3276 149.672 10 100 10C50.3276 10 10 50.3276 10 100V100" stroke="#00F2FF" stroke-width="4" stroke-dasharray="10 5"/>
+<path d="M60 140V60L100 100L140 60V140" stroke="#00F2FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M100 100V150" stroke="#00F2FF" stroke-width="8" stroke-linecap="round"/>
+<path d="M87 150H113C114.104 150 115 150.896 115 152V158C115 159.104 114.104 160 113 160H87C85.8962 160 85 159.104 85 158V152C85 150.896 85.8962 150 87 150Z" fill="#00F2FF"/>
+<path d="M85 100C85 108.279 91.7213 115 100 115C108.279 115 115 108.279 115 100C115 91.7213 108.279 85 100 85C91.7213 85 85 91.7213 85 100Z" fill="#00F2FF" fill-opacity="0.2"/>
+</svg>

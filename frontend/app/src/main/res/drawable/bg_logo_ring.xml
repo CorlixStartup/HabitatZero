@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Logo container: dashed 2dp border accent_cyan, 30dp radius (circle for 60dp view) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <stroke android:width="2dp" android:color="@color/accent_cyan"
+            android:dashWidth="4dp" android:dashGap="3dp"/>
+    <solid android:color="@android:color/transparent"/>
+</shape>

@@ -49,7 +49,7 @@ Em uma colônia espacial, falhas nos sistemas de suporte de vida podem ser letai
 ```
 habitatzero/
 ├── backend/      # API Spring Boot (Java 21)
-├── frontend/        # Aplicativo Android (Kotlin)
+├── frontend/     # Aplicativo Android (Kotlin)
 ├── IoT/          # Firmware ESP32 + simulador Python
 ├── db/           # Scripts SQL (DDL + DML)
 └── README.md     # Este arquivo
@@ -446,26 +446,28 @@ cd IoT && pip install pytest requests && pytest test_integration.py -v
 O aplicativo segue o padrão **Single-Activity MVVM** com Fragments:
 
 ```
-MainActivity (host único com BottomNavigationView)
+MainActivity (host único com BottomNavigationView — 4 abas)
     └── FragmentContainerView
          ├── DashboardFragment  → DashboardViewModel  → Repository → API
          ├── EstufasFragment    → EstufasViewModel    → Repository → API
-         └── AlertasFragment    → AlertasViewModel    → Repository → API
+         ├── AlertasFragment    → AlertasViewModel    → Repository → API
+         └── ProfileFragment    → ProfileViewModel    → Repository → API
 
 Telas de detalhe (Activities separadas, abertas por Intent):
-    EstufaDetailActivity  → EstufaDetailViewModel → Repository → API
+    EstufaDetailActivity      → EstufaDetailViewModel      → Repository → API
     ControleClimaticoActivity → ControleClimaticoViewModel → Repository → API
-    HistoricoActivity     → SharedPreferences (local)
+    HistoricoActivity         → SharedPreferences (local)
 ```
 
 ### Telas do Aplicativo
 
 | Tela | Tipo | Descrição | Endpoints usados |
 |---|---|---|---|
-| **Login** | Activity | Autenticação com email/senha; token JWT salvo em SharedPreferences; sessão persiste entre aberturas do app | `POST /auth/login` |
+| **Login** | Activity | Autenticação com email/senha; token JWT e email salvos em SharedPreferences; sessão persiste entre aberturas do app | `POST /auth/login` |
 | **Dashboard** | Fragment | Gráficos em tempo real dos 4 sensores, polling a cada 5s, histórico das últimas 20 leituras | `GET /sensores/leituras` |
 | **Estufas** | Fragment | Lista de estufas com status colorido, total de plantas e alertas ativos | `GET /estufas` |
 | **Alertas** | Fragment | Alertas ativos globais com código de cores por severidade, botão "✓ Resolver" por item | `GET /alertas`, `PATCH /alertas/{id}/resolver` |
+| **Perfil** | Fragment | Dados do colono logado (email, iniciais geradas), métricas da missão (sols, eficiência das estufas ao vivo), configurações do sistema, logout com confirmação | `GET /estufas` |
 | **Detalhe da Estufa** | Activity | Central de administração da estufa: info, painel de sistemas da colônia (simulado), controles de ventilação/irrigação, gerenciamento de plantas, alertas da estufa | `GET /plantas`, `POST /plantas`, `PUT /plantas/{id}`, `GET /alertas/estufa/{id}`, `PATCH /alertas/{id}/resolver` |
 | **Controle Climático** | Activity | Ajuste dos thresholds de temperatura e umidade via sliders | `PUT /estufas/{id}` |
 | **Histórico** | Activity | Registro local dos comandos de ventilação/irrigação executados | SharedPreferences |
@@ -474,13 +476,14 @@ Telas de detalhe (Activities separadas, abertas por Intent):
 
 ```
 LoginActivity (splash + auto-login se token salvo)
-    └── MainActivity (Single-Activity host)
+    └── MainActivity (Single-Activity host — 4 abas no Bottom Navigation)
          ├── [tab Dashboard]  ── DashboardFragment    (polling 5s)
          ├── [tab Estufas]    ── EstufasFragment
          │                          └── [tap estufa] ── EstufaDetailActivity
          │                                                  └── [btn thresholds] ── ControleClimaticoActivity
          │                                                  └── [btn histórico]  ── HistoricoActivity
-         └── [tab Alertas]    ── AlertasFragment
+         ├── [tab Alertas]    ── AlertasFragment
+         └── [tab Perfil]     ── ProfileFragment
 ```
 
 ### Funcionalidades de Administração
@@ -498,10 +501,40 @@ LoginActivity (splash + auto-login se token salvo)
 
 ### Autenticação JWT
 
-- Token salvo em `SharedPreferences` (`HabitatZeroPrefs` → `token`) após login
+- Token e email salvos em `SharedPreferences` (`HabitatZeroPrefs` → `token`, `user_email`) após login bem-sucedido
 - `LoginActivity` verifica o token no `onCreate` — se existir, pula direto para `MainActivity`
 - `JWTInterceptor` injeta `Authorization: Bearer <token>` em todas as requisições autenticadas
 - `AuthInterceptor` captura HTTP 401, limpa o token e redireciona para login (executado no main thread via `Handler`)
+
+### Design System
+
+O app usa um design system próprio com tema escuro estilo sci-fi, definido inteiramente via recursos Android (sem valores hardcoded no código):
+
+**Paleta principal** (`res/values/colors.xml`):
+
+| Token | Cor | Uso |
+|---|---|---|
+| `bg_primary` | `#0A0E14` | Fundo de todas as telas |
+| `bg_surface` | `#111922` | Cards e superfícies |
+| `bg_card_dark` | `#0D1520` | Cards de métricas |
+| `accent_cyan` | `#00E5CC` | Cor de marca — destaques, bordas, ícones ativos |
+| `alert_critical` | `#E53935` | Alertas críticos e botão de logout |
+| `alert_warning` | `#F9A825` | Avisos de manutenção |
+| `alert_success` | `#00C853` | Estado resolvido / OK |
+| `text_primary` | `#FFFFFF` | Texto principal |
+| `text_secondary` | `#8A9BB0` | Labels, subtítulos |
+| `nav_active` | `#00E5CC` | Tab ativo no Bottom Nav |
+
+**Tipografia** (`res/values/dimens.xml`): escala de `text_xs` (10sp) a `text_3xl` (48sp), com fontes `sans-serif-medium` para títulos e `monospace` para IDs e códigos de sistema.
+
+**Estilos reutilizáveis** (`res/values/styles.xml`):
+- `Widget.HabitatZero.Button.Primary` — botão cyan, texto escuro
+- `Widget.HabitatZero.Button.Destructive` — botão transparente com borda vermelha (logout)
+- `Widget.HabitatZero.Button.OutlinedCyan` — botão contornado em cyan
+- `Widget.HabitatZero.Card` / `.Card.Dark` — cards com `cornerRadius=12dp` e borda sutil
+- `Widget.HabitatZero.TextInputLayout` — campos de input com fundo escuro e borda sutil
+
+> **Fontes customizadas:** Para ativar Space Grotesk e JetBrains Mono, coloque os arquivos `.ttf` em `frontend/app/src/main/res/font/` — instruções detalhadas em `res/values/fonts.xml`.
 
 ### Configuração do Emulador vs Dispositivo Físico
 
@@ -837,15 +870,17 @@ habitatzero-entrega.zip
 
 - [x] Diagrama ER com 4 entidades e relacionamentos
 - [x] Script SQL com `CREATE TABLE`, PKs, FKs e inserts
-- [x] Consultas SQL de simulação de uso espacial
+- [x] Consultas SQL de simulação de uso espacial (`db/queries_habitat_zero.sql`)
 - [x] API Spring Boot com 19+ endpoints (GET, POST, PUT, PATCH, DELETE)
 - [x] Arquitetura em camadas: Controller → Service → Repository
 - [x] Documentação Swagger em `/swagger-ui.html`
 - [x] Seed automático de dados no startup (DataSeeder) — 2 estufas, 2 colonos, 3 plantas
 - [x] 13 casos de teste documentados (TC-01 a TC-08 backend, TC-FE-01 a TC-FE-05 frontend, IT-01 a IT-04 IoT)
-- [x] App Android com 7 telas (Login, Dashboard, Estufas, Detalhe da Estufa, Controle Climático, Alertas, Histórico)
-- [x] Arquitetura Single-Activity com Fragments e navegação por Bottom Navigation
-- [x] Login com sessão persistida (token JWT em SharedPreferences)
+- [x] App Android com 8 telas (Login, Dashboard, Estufas, Detalhe da Estufa, Controle Climático, Alertas, Histórico, **Perfil**)
+- [x] Arquitetura Single-Activity com 4 Fragments e navegação por Bottom Navigation
+- [x] Tela de Perfil com dados do colono ao vivo, métricas da missão e logout com confirmação
+- [x] Design system unificado — tema escuro sci-fi com paleta, tipografia e estilos em recursos Android
+- [x] Login com sessão persistida (token JWT + email em SharedPreferences)
 - [x] Login com senha BCrypt
 - [x] 2+ práticas de segurança (BCrypt + Bean Validation + proteção SQLi/XSS)
 - [x] Simulação IoT com 4 sensores (O₂, Umidade, Radiação, Temperatura)

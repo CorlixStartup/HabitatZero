@@ -1,49 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    app:cardCornerRadius="14dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="@color/bg_card">
+    android:layout_marginBottom="12dp"
+    android:foreground="@drawable/ripple_card"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="@android:color/transparent">
 
+    <!-- card content drawn over bg_card_critical drawable -->
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:orientation="vertical"
+        android:background="@drawable/bg_card_critical"
+        android:paddingStart="20dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp">
 
+        <!-- Top row: severity badge + timestamp -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="6dp">
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/tvSeveridade"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="ATENCAO"
-                android:textSize="11sp"
+                android:textSize="10sp"
                 android:textStyle="bold"
+                android:fontFamily="monospace"
                 android:paddingHorizontal="10dp"
-                android:paddingVertical="3dp"
+                android:paddingVertical="4dp"
                 android:background="@drawable/bg_badge"
-                android:layout_marginEnd="10dp"/>
+                android:textColor="@color/alert_critical"
+                android:layout_marginEnd="8dp"/>
+
+            <!-- Spacer -->
+            <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
 
             <TextView
                 android:id="@+id/tvCriadoEm"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="--"
                 android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:gravity="end"/>
+                android:textSize="10sp"
+                android:fontFamily="monospace"/>
         </LinearLayout>
 
+        <!-- Message -->
         <TextView
             android:id="@+id/tvMensagem"
             android:layout_width="match_parent"
@@ -52,17 +66,19 @@
             android:textColor="@color/text_primary"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:layout_marginBottom="10dp"/>
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="12dp"/>
 
+        <!-- Resolve button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnResolver"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/Widget.HabitatZero.Button.OutlinedCyan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="✓ Resolver"
-            android:textSize="12sp"
-            app:strokeColor="@color/verde_normal"
-            android:textColor="@color/verde_normal"/>
+            android:textSize="11sp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"/>
     </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
 
+</com.google.android.material.card.MaterialCardView>

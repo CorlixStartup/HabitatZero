@@ -44,7 +44,10 @@ class LoginActivity : AppCompatActivity() {
 
         loginViewModel.tokenLiveData.observe(this) { token ->
             val prefs = getSharedPreferences("HabitatZeroPrefs", Context.MODE_PRIVATE)
-            prefs.edit().putString("token", token.token).apply()
+            prefs.edit()
+                .putString("token", token.token)
+                .putString("user_email", token.email)
+                .apply()
 
             Toast.makeText(this, "Bem-vindo, ${token.nome}!", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, MainActivity::class.java).apply {

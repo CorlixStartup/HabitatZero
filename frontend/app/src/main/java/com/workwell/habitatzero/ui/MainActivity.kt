@@ -8,6 +8,7 @@ import com.workwell.habitatzero.R
 import com.workwell.habitatzero.ui.fragment.AlertasFragment
 import com.workwell.habitatzero.ui.fragment.DashboardFragment
 import com.workwell.habitatzero.ui.fragment.EstufasFragment
+import com.workwell.habitatzero.ui.fragment.ProfileFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_dashboard -> { loadFragment(DashboardFragment(), NAV_DASHBOARD); true }
                 R.id.nav_estufas   -> { loadFragment(EstufasFragment(),   NAV_ESTUFAS);   true }
                 R.id.nav_alertas   -> { loadFragment(AlertasFragment(),   NAV_ALERTAS);   true }
+                R.id.nav_profile   -> { loadFragment(ProfileFragment(),   NAV_PROFILE);   true }
                 else -> false
             }
         }
@@ -50,5 +52,6 @@ class MainActivity : AppCompatActivity() {
         const val NAV_DASHBOARD = "dashboard"
         const val NAV_ESTUFAS   = "estufas"
         const val NAV_ALERTAS   = "alertas"
+        const val NAV_PROFILE   = "profile"
     }
 }
