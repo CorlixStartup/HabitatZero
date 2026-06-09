@@ -858,24 +858,6 @@ Copie o `token` retornado, clique em **Authorize** no Swagger e cole `Bearer <to
   </tr>
 </table>
 
-
----
-
-## 📦 Estrutura do .zip de Entrega
-
-```
-habitatzero-entrega.zip
-├── backend/                  # Código-fonte Spring Boot completo
-├── frontend/                    # Projeto Android Studio completo (Kotlin)
-├── IoT/                      # Firmware ESP32 + simulador Python
-├── db/                       # script_habitat_zero.sql + consultas
-├── README.md                 # Este arquivo
-├── documento.pdf             # Diagrama ER + casos de teste + prints + IoT
-└── grupo.txt                 # Nome do grupo, RMs, nomes e link do Vídeo Pitch
-```
-
----
-
 <div align="center">
 
 **FIAP — Engenharia de Software — 4º Ano — Global Solution 2026/1**
