@@ -858,6 +858,8 @@ Copie o `token` retornado, clique em **Authorize** no Swagger e cole `Bearer <to
   </tr>
 </table>
 
+Link vídeo pitch: https://drive.google.com/file/d/1ECEGKpqeHcFW7UNDnqInj0x3OuDHZRnO/view
+
 <div align="center">
 
 **FIAP — Engenharia de Software — 4º Ano — Global Solution 2026/1**
